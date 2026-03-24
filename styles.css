@@ -1,0 +1,233 @@
+:root {
+    --primary: #2563EB;
+    --primary-hover: #1D4ED8;
+    --bg-color: #F8FAFC;
+    --surface: #FFFFFF;
+    --text-main: #0F172A;
+    --text-muted: #475569;
+    --border: #E2E8F0;
+    --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    --shadow-hover: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+}
+
+body {
+    font-family: 'Inter', sans-serif;
+    background-color: var(--bg-color);
+    color: var(--text-main);
+    margin: 0;
+    padding: 0;
+    line-height: 1.6;
+}
+
+.container {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 60px 20px;
+}
+
+header {
+    text-align: center;
+    margin-bottom: 50px;
+}
+
+h1 {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: var(--text-main);
+    margin-bottom: 10px;
+}
+
+.subtitle {
+    color: var(--text-muted);
+    font-size: 1.1rem;
+}
+
+/* Level Cards (Main Page) */
+.level-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 20px;
+}
+
+.card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 40px 20px;
+    text-align: center;
+    cursor: pointer;
+    box-shadow: var(--shadow);
+    transition: all 0.3s ease;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+    box-shadow: var(--shadow-hover);
+    border-color: var(--primary);
+}
+
+.card-icon {
+    font-size: 3rem;
+    margin-bottom: 15px;
+}
+
+.card h2 {
+    margin: 0 0 10px;
+    font-size: 1.5rem;
+    color: var(--text-main);
+}
+
+.card p {
+    margin: 0;
+    color: var(--text-muted);
+    font-size: 0.95rem;
+}
+
+/* Questions Area */
+.questions-container {
+    background: transparent;
+    animation: fadeIn 0.4s ease;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.level-indicator {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    margin-bottom: 30px;
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 15px;
+}
+
+.back-btn {
+    background: none;
+    border: none;
+    color: var(--primary);
+    font-weight: 600;
+    cursor: pointer;
+    padding: 0;
+    margin-bottom: 10px;
+    font-size: 0.95rem;
+    display: flex;
+    align-items: center;
+}
+
+.back-btn:hover {
+    text-decoration: underline;
+}
+
+.level-indicator h2 {
+    margin: 0;
+    font-size: 1.8rem;
+    color: var(--text-main);
+}
+
+.question-list {
+    display: none;
+}
+
+.question-list.active {
+    display: block;
+    animation: fadeIn 0.4s ease;
+}
+
+/* Accordion Styles */
+.faq-item {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    margin-bottom: 15px;
+    overflow: hidden;
+    box-shadow: var(--shadow);
+    transition: border-color 0.2s;
+}
+
+.faq-item:hover {
+    border-color: #CBD5E1;
+}
+
+.faq-question {
+    width: 100%;
+    text-align: left;
+    background: transparent;
+    border: none;
+    padding: 24px 20px;
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--text-main);
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    transition: background 0.2s;
+}
+
+.faq-question:hover {
+    background: #F8FAFC;
+}
+
+.toggle-icon {
+    font-size: 1.5rem;
+    color: var(--primary);
+    transition: transform 0.3s ease;
+    flex-shrink: 0;
+    margin-left: 20px;
+    font-weight: 400;
+}
+
+.faq-answer {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.4s ease-in-out;
+    background: #F8FAFC;
+}
+
+.answer-content {
+    padding: 0 20px 24px 20px;
+    color: var(--text-muted);
+}
+
+.answer-content p {
+    margin-top: 0;
+}
+
+.answer-content ul {
+    margin-bottom: 0;
+}
+
+.faq-item.active .faq-answer {
+    max-height: 1000px; /* Arbitrary large max-height for animation */
+}
+
+.faq-item.active .toggle-icon {
+    transform: rotate(45deg);
+}
+
+.faq-item.active .faq-question {
+    background: #F8FAFC;
+    padding-bottom: 16px;
+}
+
+/* Footer Styles */
+footer {
+    text-align: center;
+    padding: 30px 20px;
+    margin-top: 40px;
+    border-top: 1px solid #CBD5E1;
+    color: var(--text-muted);
+}
+
+footer a {
+    color: var(--primary);
+    text-decoration: none;
+    font-weight: 500;
+    transition: color 0.2s ease;
+}
+
+footer a:hover {
+    text-decoration: underline;
+}
