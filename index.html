@@ -597,6 +597,263 @@
                         </div>
                     </div>
                 </div>
+
+                <div class="faq-item">
+                    <button class="faq-question">
+                        33. Що таке JSON і CSV, в чому їхня різниця?
+                        <span class="toggle-icon">+</span>
+                    </button>
+                    <div class="faq-answer">
+                        <div class="answer-content">
+                            <p><strong>JSON (JavaScript Object Notation):</strong> Це формат передачі даних у вигляді "ключ-значення". Він напівструктурований, може містити вкладені масиви та інші об'єкти. Переважно використовується в REST API.</p>
+                            <p><strong>CSV (Comma-Separated Values):</strong> Текстовий формат, де дані розділені комами (або іншим символом, наприклад <code>;</code> чи <code>|</code>). Він лінійний і плоский (кожен рядок - новий запис). Легко читається в Excel. Не підтримує складні типи даних та вкладеності.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <button class="faq-question">
+                        34. Що таке REST API і як він використовується для інтеграції даних?
+                        <span class="toggle-icon">+</span>
+                    </button>
+                    <div class="faq-answer">
+                        <div class="answer-content">
+                            <p><strong>REST API</strong> — це архітектурний стиль взаємодії компонентів через HTTP-запити. Зазвичай повертає дані у форматі JSON.</p>
+                            <p>Data Engineers використовують API для інтеграції (Data Extraction) — написання скриптів на Python (через бібліотеку <code>requests</code>), які "викачують" дані з зовнішніх сервісів (Facebook Ads, Salesforce, Jira) та складають їх у Data Lake.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <button class="faq-question">
+                        35. Яка різниця між List, Tuple, Set, Dict у Python?
+                        <span class="toggle-icon">+</span>
+                    </button>
+                    <div class="faq-answer">
+                        <div class="answer-content">
+                            <ul>
+                                <li><strong>List <code>[]</code>:</strong> Впорядкована колекція елементів, яку можна змінювати (mutable). Підтримує дублікати.</li>
+                                <li><strong>Tuple <code>()</code>:</strong> Впорядкована колекція, але <em>незмінна (immutable)</em>. Працює швидше за список, часто використовується для повернення декількох значень з функції.</li>
+                                <li><strong>Set <code>{}</code>:</strong> Невпорядкована колекція <em>унікальних</em> елементів. Ідеальна для видалення дублікатів (<code>set(my_list)</code>).</li>
+                                <li><strong>Dict <code>{"key": "value"}</code>:</strong> Зберігає пари ключ-значення. Ключем може бути лише незмінний тип.</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <button class="faq-question">
+                        36. Які відмінності між операторами TRUNCATE, DELETE, DROP у SQL?
+                        <span class="toggle-icon">+</span>
+                    </button>
+                    <div class="faq-answer">
+                        <div class="answer-content">
+                            <ul>
+                                <li><strong>DELETE:</strong> Видаляє окремі рядки за умовою <code>WHERE</code>. Кожне видалення записується в лог транзакцій. Це <em>DML</em> операція (її можна відкотити за допомогою ROLLBACK).</li>
+                                <li><strong>TRUNCATE:</strong> Миттєво видаляє ВІДРАЗУ ВСІ рядки з таблиці. Швидкий, бо не пише кожен рядок у лог. Структура таблиці залишається. <em>DDL</em> операція (в більшості СУБД відкотити неможливо).</li>
+                                <li><strong>DROP:</strong> Повністю знищує таблицю з бази даних, включаючи її структуру, дані та індекси.</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <button class="faq-question">
+                        37. Для чого використовуються WHERE та HAVING? У чому різниця?
+                        <span class="toggle-icon">+</span>
+                    </button>
+                    <div class="faq-answer">
+                        <div class="answer-content">
+                            <p>Обидва оператори використовуються для фільтрації даних, але на різних етапах запиту:</p>
+                            <ul>
+                                <li><strong>WHERE:</strong> Фільтрує "сирі" дані <em>до</em> їх групування (GROUP BY). Він не може використовувати агрегатні функції. Наприклад: <code>WHERE age > 18</code>.</li>
+                                <li><strong>HAVING:</strong> Фільтрує вже <em>згруповані</em> результати. Може використовувати агрегатні функції. Наприклад: <code>HAVING COUNT(orders) > 5</code>.</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <button class="faq-question">
+                        38. Що таке віртуальне середовище (Virtual Environment) у Python?
+                        <span class="toggle-icon">+</span>
+                    </button>
+                    <div class="faq-answer">
+                        <div class="answer-content">
+                            <p><strong>Virtual Environment (venv)</strong> — це ізольоване середовище для окремого Python-проєкту.</p>
+                            <p>Воно дозволяє запускати проєкти з різними версіями одних і тих же бібліотек на одній машині (наприклад, Проєкт А вимагає pandas 1.0, а Проєкт Б — pandas 2.0). Без віртуального середовища це спричинило б конфлікт залежностей.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <button class="faq-question">
+                        39. Що таке DDL і DML в SQL? Які команди належать до кожного типу?
+                        <span class="toggle-icon">+</span>
+                    </button>
+                    <div class="faq-answer">
+                        <div class="answer-content">
+                            <ul>
+                                <li><strong>DDL (Data Definition Language):</strong> Мова визначення даних. Використовується для створення та зміни <em>структури</em> бази даних (таблиць, індексів, баз). Команди: <code>CREATE</code>, <code>ALTER</code>, <code>DROP</code>, <code>TRUNCATE</code>.</li>
+                                <li><strong>DML (Data Manipulation Language):</strong> Мова маніпулювання даними. Змінює самі <em>дані</em> всередині таблиць. Команди: <code>INSERT</code>, <code>UPDATE</code>, <code>DELETE</code>. Запити <code>SELECT</code> часто виділяють в окрему групу DQL (Data Query Language).</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <button class="faq-question">
+                        40. Що таке TCL (Transaction Control Language) у базах даних?
+                        <span class="toggle-icon">+</span>
+                    </button>
+                    <div class="faq-answer">
+                        <div class="answer-content">
+                            <p><strong>TCL</strong> — це команди для управління транзакціями у базі даних (управління DML-запитами):</p>
+                            <ul>
+                                <li><code>COMMIT:</code> Фіксує (зберігає) всі зміни, зроблені в поточній транзакції назавжди.</li>
+                                <li><code>ROLLBACK:</code> Відкочує всі зміни з моменту старту транзакції, якщо сталася помилка.</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <button class="faq-question">
+                        41. Що таке Stage Zone (зона етапування) і які її завдання?
+                        <span class="toggle-icon">+</span>
+                    </button>
+                    <div class="faq-answer">
+                        <div class="answer-content">
+                            <p><strong>Stage Zone (Staging)</strong> — це тимчасова, проміжна зона зберігання даних між джерелами даних (Data Sources) та Сховищем Даних (Data Warehouse).</p>
+                            <p><strong>Завдання:</strong> Дані зчитуються з багатьох повільних або критичних джерел (наприклад, продакшн-БД) і швидко копіюються в Staging без жодних трансформацій. Це робиться для того, щоб не навантажувати джерело важкими обчисленнями під час очищення даних. Вже на Staging серверах дані безпечно об'єднуються та очищуються перед завантаженням у Сховище.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <button class="faq-question">
+                        42. Що таке HDFS і як він забезпечує зберігання даних?
+                        <span class="toggle-icon">+</span>
+                    </button>
+                    <div class="faq-answer">
+                        <div class="answer-content">
+                            <p><strong>HDFS (Hadoop Distributed File System)</strong> — це розподілена файлова система ядра Hadoop.</p>
+                            <p>Вона розбиває величезні файли на блоки (зазвичай по 128 МБ) і розподіляє їх між сотнями фізичних серверів (DataNodes) у кластері. Для забезпечення надійності кожен блок реплікується (дублюється) 3 рази на різних серверах. Якщо один сервер згорає — дані не втрачаються і система продовжує працювати (Fault Tolerance).</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <button class="faq-question">
+                        43. Що таке NoSQL бази даних і які їх переваги при роботі з Big Data?
+                        <span class="toggle-icon">+</span>
+                    </button>
+                    <div class="faq-answer">
+                        <div class="answer-content">
+                            <p><strong>NoSQL (Not Only SQL)</strong> — це нереляційні БД, які не використовують стандартні таблиці з рядками та стовпцями.</p>
+                            <p>Вони ідеальні для Big Data завдяки <strong>горизонтальному масштабуванню</strong> (легко додати нові сервери у кластер). Особливості:</p>
+                            <ul>
+                                <li>Не мають жорсткої схеми даних (Schema-less), можна зберігати JSON/документи.</li>
+                                <li>Жертвують жорсткими ACID-гарантіями заради феноменальної швидкості та доступності (CAP-теорема: вибирають AP або CP).</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <button class="faq-question">
+                        44. Що таке лямбда-функції (lambda) у Python?
+                        <span class="toggle-icon">+</span>
+                    </button>
+                    <div class="faq-answer">
+                        <div class="answer-content">
+                            <p><strong>Лямбда-функція</strong> — це маленька анонімна (без імені) функція, яка визначається одним рядком за допомогою ключового слова <code>lambda</code>.</p>
+                            <p>Приклад: <code>multiply = lambda x, y: x * y</code>. Їх часто використовують як швидкі одноразові функції всередині інших методів, наприклад, під час сортування (<code>sorted(list, key=lambda x: x[1])</code>) або як User Defined Functions (UDF) у Pandas чи Spark.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <button class="faq-question">
+                        45. Що таке context manager (оператор with) у Python?
+                        <span class="toggle-icon">+</span>
+                    </button>
+                    <div class="faq-answer">
+                        <div class="answer-content">
+                            <p><strong>Context Manager (Менеджер контексту)</strong> — це механізм у Python для зручного управління ресурсами, який гарантує автоматичне очищення/закриття ресурсу після його використання.</p>
+                            <p>Найчастіше це оператор <code>with open('file.txt') as f:</code>. Якщо під час читання файлу відбудеться помилка або цикл закінчиться, контекстний менеджер автоматично викличе метод <code>f.close()</code>, щоб звільнити системний ресурс і не допустити витоку пам'яті (Memory Leak).</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <button class="faq-question">
+                        46. Що таке генератори та ітератори у Python?
+                        <span class="toggle-icon">+</span>
+                    </button>
+                    <div class="faq-answer">
+                        <div class="answer-content">
+                            <ul>
+                                <li><strong>Ітератор:</strong> Будь-який об'єкт (список, кортеж, рядок), який можна обійти в циклі <code>for</code>. Під капотом він реалізує магічний метод <code>__next__()</code>.</li>
+                                <li><strong>Генератор:</strong> Це "одноразовий" лінивий ітератор, створений за допомогою функції зі словом <code>yield</code> замість <code>return</code>, або через генераторні вирази <code>(x**2 for x in data)</code>. <strong>Перевага:</strong> Генератор не зберігає весь масив у пам'яті. Він видає по одному елементу лише тоді, коли його про це попросять. Це дозволяє Data-інженерам обробляти гігантські файли (по 100 ГБ) на ноутбуці з 8 ГБ RAM.</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <button class="faq-question">
+                        47. Що таке «ліниве обчислення» (lazy evaluation) у Spark?
+                        <span class="toggle-icon">+</span>
+                    </button>
+                    <div class="faq-answer">
+                        <div class="answer-content">
+                            <p><strong>Lazy Evaluation</strong> означає, що Spark взагалі нічого не робить і не обчислює дані, коли ви пишете тисячі перетворень (трансформацій <code>filter()</code>, <code>join()</code>). Він просто "записує" їх у план дій — Граф (DAG).</p>
+                            <p>Дані починають реально читатися і оброблятися <strong>лише тоді</strong>, коли ви викликаєте спеціальну команду Дію (Action), наприклад <code>show()</code>, <code>count()</code> або <code>write()</code>. Це дозволяє оптимізатору (Catalyst) заздалегідь переглянути весь план і прибрати зайві кроки.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <button class="faq-question">
+                        48. Які операції в Spark називаються Трансформаціями, а які — Діями?
+                        <span class="toggle-icon">+</span>
+                    </button>
+                    <div class="faq-answer">
+                        <div class="answer-content">
+                            <ul>
+                                <li><strong>Трансформації (Transformations):</strong> Ліниві операції. Вони застосовуються до існуючого DataFrame і повертають новий DataFrame. Нічого не обчислюють фізично. Приклади: <code>select()</code>, <code>filter()</code>, <code>groupBy()</code>.</li>
+                                <li><strong>Дії (Actions):</strong> Примушують Spark виконати всі нагромаджені ліниві трансформації та повернути реальний фізичний результат (на диск або в RAM). Приклади: <code>show()</code>, <code>collect()</code>, <code>write()</code>.</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <button class="faq-question">
+                        49. Які формати даних підтримує Spark для обробки?
+                        <span class="toggle-icon">+</span>
+                    </button>
+                    <div class="faq-answer">
+                        <div class="answer-content">
+                            <p>Apache Spark може читати майже будь-який формат завдяки DataFrameReader. Найпопулярніші: <strong>CSV, JSON, Parquet, Avro, ORC</strong>.</p>
+                            <p>Він також підтримує прямі підключення до реляційних баз даних (через <strong>JDBC/ODBC</strong> драйвери), а також бази даних NoSQL типу Cassandra чи MongoDB.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <button class="faq-question">
+                        50. Що таке pod у Kubernetes і яке його призначення?
+                        <span class="toggle-icon">+</span>
+                    </button>
+                    <div class="faq-answer">
+                        <div class="answer-content">
+                            <p><strong>Pod (Под)</strong> — це найменший, найбазовіший об'єкт у Kubernetes, який ви можете створити або яким можна керувати.</p>
+                            <p>Под — це логічна оболонка (обгортка) навколо одного або декількох тісно пов'язаних контейнерів (наприклад, Docker-контейнерів). Ці контейнери завжди запускаються разом на одному сервері, ділять спільну IP-адресу та ресурси збереження (Volumes), що дозволяє їм легко спілкуватися один з одним через localhost.</p>
+                        </div>
+                    </div>
+                </div>
             </div>
 
             <!-- Middle Питання -->
@@ -996,6 +1253,100 @@
                         <div class="answer-content">
                             <p><strong>Партиціонування</strong> — це поділ однієї величезної логічної таблиці на дрібніші фізичні шматки (партиції) на жорсткому диску за певним ключем (зазвичай за Датою — Date, Рoком, Місяцем).</p>
                             <p><strong>Навіщо:</strong> Коли ви робите SELECT запит з умовою <code>WHERE created_at = '2023-11-01'</code>, база даних використовує <em>Partition Pruning</em> (обрізку партицій). Вона відкидає всі інші місяці та роки і сканує лише один малесенький файл, пришвидшуючи запит у десятки разів порівняно з Full Scan.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <button class="faq-question">
+                        22. Що таке data lineage і чому вона важлива у проєктах з обробки даних?
+                        <span class="toggle-icon">+</span>
+                    </button>
+                    <div class="faq-answer">
+                        <div class="answer-content">
+                            <p><strong>Data Lineage (походження даних)</strong> — це візуалізація та зберігання інформації про життєвий цикл даних: з якого джерела вони прийшли, через які таблиці й трансформації пройшли та в яких фінальних дашбордах були використані.</p>
+                            <p><strong>Чому важлива:</strong> Якщо метрика на дашборді СЕО раптом показує від'ємний прибуток, Data Lineage дозволяє швидко "розмотати" клубок і знайти, на якому етапі (в якому скрипті) закралася помилка. Це економить години на дебагінг.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <button class="faq-question">
+                        23. Які підходи ви застосовуєте для інкрементального завантаження даних (incremental loading)?
+                        <span class="toggle-icon">+</span>
+                    </button>
+                    <div class="faq-answer">
+                        <div class="answer-content">
+                            <p>Інкрементальне завантаження (на відміну від Full Reload) обробляє лише <em>нові або змінені</em> дані. Основні підходи:</p>
+                            <ul>
+                                <li><strong>Watermarking (High-water mark):</strong> Збереження останнього обробленого ID або Timestamp. Наступний запуск запитує лише дані, де <code>updated_at > 'остання_дата'</code>.</li>
+                                <li><strong>Change Data Capture (CDC):</strong> Безпосереднє читання логів транзакцій самої БД (наприклад, WAL у Postgres через Debezium), що захоплює всі INSERT, UPDATE, DELETE.</li>
+                                <li><strong>Event Tracking (Queue):</strong> Сервіс надсилає кожне оновлення як повідомлення у Kafka, а ми його забираємо звідти.</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <button class="faq-question">
+                        24. У чому полягають ключові відмінності між star та snowflake схемами?
+                        <span class="toggle-icon">+</span>
+                    </button>
+                    <div class="faq-answer">
+                        <div class="answer-content">
+                            <ul>
+                                <li><strong>Схема Зірка (Star Schema):</strong> Складається з великої таблиці Фактів у центрі, навколо якої розташовані <em>ненормалізовані</em> (або денормалізовані, плоскі) таблиці Вимірів. Її дуже легко читати та джоїнити (швидкі SELECT-запити).</li>
+                                <li><strong>Схема Сніжинка (Snowflake Schema):</strong> Відрізняється тим, що таблиці Вимірів повністю <em>нормалізовані</em> (виміри розгалужуються на ще менші таблиці: напр. таблиця "Місто" зв'язується з таблицею "Країна"). Займає менше місця, але вимагає багатьох складних JOIN'ів, що уповільнює аналітику.</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <button class="faq-question">
+                        25. Що означають поняття «факти» та «виміри» (facts and dimensions) у Data Warehouse?
+                        <span class="toggle-icon">+</span>
+                    </button>
+                    <div class="faq-answer">
+                        <div class="answer-content">
+                            <ul>
+                                <li><strong>Факти (Fact Tables):</strong> Це чисельні показники (метрики) бізнес-процесу (кількість, сума, ціна, знижка). Це те, що ми можемо виміряти. Наприклад: таблиця продажів. У них переважають цифри та Foreign ключі.</li>
+                                <li><strong>Виміри (Dimension Tables):</strong> Це описові атрибути, які надають контекст фактам ("хто", "де", "коли", "що"). Наприклад: Клієнти, Продукти, Час, Магазини. Вони містять текст та ідентифікатори.</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <button class="faq-question">
+                        26. Як підтримувати еволюцію схеми (schema evolution) у зоні підготовки даних?
+                        <span class="toggle-icon">+</span>
+                    </button>
+                    <div class="faq-answer">
+                        <div class="answer-content">
+                            <p>Якщо бізнес додав нові колонки або змінив тип даних, пайплайн не повинен впасти.</p>
+                            <ul>
+                                <li><strong>Avro/Parquet:</strong> Використання властивостей цих форматів (додавання нових колонок підтримується з коробки).</li>
+                                <li><strong>Delta Lake / Iceberg:</strong> Вмикання параметра <code>mergeSchema = true</code> під час запису. Якщо з'явилась нова колонка в DataFrame, рушій автоматично змінить DDL таблиці на диску.</li>
+                                <li><strong>DLQ:</strong> Записи, які не відповідають жорсткій схемі, відкидаються в Dead Letter Queue.</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <button class="faq-question">
+                        27. Які механізми використовуються для відстеження історичних змін (SCD)?
+                        <span class="toggle-icon">+</span>
+                    </button>
+                    <div class="faq-answer">
+                        <div class="answer-content">
+                            <p>Це вирішує концепція <strong>Slowly Changing Dimensions (SCD)</strong>:</p>
+                            <ul>
+                                <li><strong>SCD Type 1 (Перезапис):</strong> Старе значення просто оновлюється новим (UPDATE). Історія змін втрачається назавжди.</li>
+                                <li><strong>SCD Type 2 (Збереження історії):</strong> Для кожної зміни створюється новий рядок (INSERT) зі статусами (наприклад, <code>is_active</code> = True) та маркерами часу <code>valid_from</code> і <code>valid_to</code>. Старий рядок позначається як неактивний.</li>
+                                <li><strong>SCD Type 3 (Нова колонка):</strong> Додається спеціальна колонка (наприклад <code>previous_city</code>), куди переходить старе значення, а поточна колонка оновлюється.</li>
+                            </ul>
                         </div>
                     </div>
                 </div>
@@ -1417,6 +1768,80 @@
                                 <li><strong>Partition Pruning:</strong> Додавати в WHERE колонку партиції (зазвичай Date-колонку), щоб СУБД сканувала лише 1% даних.</li>
                                 <li><strong>Спрощення:</strong> Виносити складну логіку у матеріалізовані представлення (Materialized Views) або обчислювати заздалегідь через CTE (лише якщо система кешує CTE). Переписати підзапити через LEFT JOIN, де це можливо.</li>
                             </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <button class="faq-question">
+                        22. Чи може розподілена система зберігання відповідати вимогам ACID? Якщо так, то як?
+                        <span class="toggle-icon">+</span>
+                    </button>
+                    <div class="faq-answer">
+                        <div class="answer-content">
+                            <p>Так, може. Існують розподілені NewSQL бази даних (наприклад, Spanner, CockroachDB), які гарантують ACID транзакції і пристроєні для роботи з безліччю вузлів.</p>
+                            <p>Також зараз популярні формати відкритих таблиць над Data Lake — <strong>Apache Iceberg, Delta Lake та Hudi</strong>. Вони забезпечують ACID транзакції над звичайними Parquet файлами, використовуючи журналювання транзакцій (Transaction Log). Вони дозволяють декільком процесам Spark одночасно записувати і читати файли на AWS S3, уникаючи ситуацій з частковим записом або пошкодженням даних (dirty reads).</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <button class="faq-question">
+                        23. Що таке Медальна архітектура (Medallion architecture) і в чому її суть?
+                        <span class="toggle-icon">+</span>
+                    </button>
+                    <div class="faq-answer">
+                        <div class="answer-content">
+                            <p>Це концепція логічної організації даних у Lakehouse, популяризована компанією Databricks, яка розділяє дані на 3 рівні якості:</p>
+                            <ul>
+                                <li><strong>Bronze (Сирі дані):</strong> Дані зберігаються так, як вони прийшли з джерела. Формат може бути будь-який, навіть з дублікатами.</li>
+                                <li><strong>Silver (Очищені дані):</strong> Дані фільтруються, уніфікуються, конвертуються у загальний формат (Parquet/Delta), дублікати видаляються, провадиться маппінг. Це єдине джерело "правди" по сутностях.</li>
+                                <li><strong>Gold (Бізнес-рівень):</strong> Дані сильно агрегуються, обчислюються бізнес-метрики (зіркова схема) для передачі BI-інструментам (Tableau, PowerBI).</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <button class="faq-question">
+                        24. Що таке спекулятивне виконання (speculative execution) у Spark?
+                        <span class="toggle-icon">+</span>
+                    </button>
+                    <div class="faq-answer">
+                        <div class="answer-content">
+                            <p><strong>Спекулятивне виконання</strong> — це конфігурація (<code>spark.speculation=true</code>), спрямована на боротьбу з повільними вузлами (stragglers).</p>
+                            <p>Якщо один чи два Task'и виконуються аномально повільніше від усіх інших (наприклад, через зношений жорсткий диск чи перевантажений процесор на одному з воркерів), Spark "спекулятивно" запускає точнісінько такий самий Task паралельно на іншому, простійному вузлі. Той, хто виконає завдання першим, його результат буде враховано, а повільного "лузера" (straggler) Spark безжально вб'є (kill task).</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <button class="faq-question">
+                        25. Як ви масштабували б систему для обробки даних у реальному часі?
+                        <span class="toggle-icon">+</span>
+                    </button>
+                    <div class="faq-answer">
+                        <div class="answer-content">
+                            <p>Масштабування Streaming системи має кілька рівнів:</p>
+                            <ul>
+                                <li><strong>Брокер повідомлень (Kafka):</strong> Масштабування відбувається шляхом збільшення кількості <strong>Партицій</strong> в топіку. (Одна партиція = один потік даних).</li>
+                                <li><strong>Обчислення (Flink/Spark Streaming):</strong> Ми збільшуємо кількість Consumer-ів (Executor-ів) рівно до кількості Партицій у брокері, щоб кожен консюмер читав свою порцію (one-to-one mapping).</li>
+                                <li><strong>База даних (Sink):</strong> Вибір БД, здатних до високошвидкісного запису (Cassandra, Clickhouse, або DynamoDB) та їх горизонтальне шардування.</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <button class="faq-question">
+                        26. Що таке Blue-Green розгортання в CI/CD?
+                        <span class="toggle-icon">+</span>
+                    </button>
+                    <div class="faq-answer">
+                        <div class="answer-content">
+                            <p><strong>Blue-Green Deployment</strong> — це стратегія випуску нових версій без жодного даунтайму (Zero Downtime).</p>
+                            <p>У вас існують два абсолютно ідентичні виробничі середовища. <em>Blue</em> (Синє) — поточне живе середовище, туди йде весь трафік користувачів. Ви деплоїте нову версію коду в <em>Green</em> (Зелене) середовище, яке поки що ніхто не бачить. Після внутрішнього тестування, ви миттєво перемикаєте балансувальник навантаження (Load Balancer) з Blue на Green.</p>
+                            <p>Якщо в Green виявилася критична помилка — ви так само в один клік повертаєте балансувальник назад на Blue.</p>
                         </div>
                     </div>
                 </div>
