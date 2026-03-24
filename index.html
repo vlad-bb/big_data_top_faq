@@ -1350,6 +1350,343 @@
                         </div>
                     </div>
                 </div>
+
+                <div class="faq-item">
+                    <button class="faq-question">
+                        28. Що таке дата-каталог (Data Catalog) і які його функції?
+                        <span class="toggle-icon">+</span>
+                    </button>
+                    <div class="faq-answer">
+                        <div class="answer-content">
+                            <p><strong>Дата-каталог</strong> — це централізований репозиторій метаданих, що допомагає організаціям структурувати та знаходити свої дані. (Аналог "Google" для внутрішніх даних компанії).</p>
+                            <p>Він автоматично сканує бази даних (Crawling), зберігає схеми таблиць, інформацію про власників таблиць (Data Stewards) та теги. Відомі приклади: Alation, Collibra, AWS Glue Data Catalog, Amundsen.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <button class="faq-question">
+                        29. Які формати використовуються для зберігання даних у Data Lake (Hudi, Iceberg, Delta Lake)?
+                        <span class="toggle-icon">+</span>
+                    </button>
+                    <div class="faq-answer">
+                        <div class="answer-content">
+                            <p>Це формати відкритих таблиць (<strong>Open Table Formats</strong>), побудовані поверх Parquet, які приносять властивості ACID баз даних у Data Lake:</p>
+                            <ul>
+                                <li><strong>Delta Lake:</strong> Розроблений Databricks. Чудово інтегрований у Spark, підтримує <code>MERGE</code>, Time Travel, Schema Evolution.</li>
+                                <li><strong>Apache Iceberg:</strong> Розроблений Netflix. Відрізняється тим, що відстежує зміни на рівні окремих файлів (File-level metadata), завдяки чому гігантські таблиці скануються миттєво.</li>
+                                <li><strong>Apache Hudi:</strong> Фокусується на швидкому Incremental Processing, має спеціальні оптимізації для частих UPSERT-операцій.</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <button class="faq-question">
+                        30. Що таке колонкова база даних (Columnar Database) і навіщо вона потрібна?
+                        <span class="toggle-icon">+</span>
+                    </button>
+                    <div class="faq-answer">
+                        <div class="answer-content">
+                            <p><strong>Колонкова БД (OLAP)</strong> записує дані на диск не рядками (послідовно кожен запис), а <strong>по-колонково</strong>. (Всі значення колонки Date лежать підряд на диску, далі йдуть всі значення колонки Price).</p>
+                            <p><strong>Випадки використання:</strong> Ідеальні для аналітики, бо при запиті <code>SUM(Price)</code> СУБД читає лише одну конкретну колонку. Рядкові ж БД (Postgres, MySQL) довелося б завантажувати в пам'ять усі стовпчики (Full Scan). Приклади колонкових БД: ClickHouse, Amazon Redshift, Snowflake.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <button class="faq-question">
+                        31. У чому полягає різниця між підходами Schema-on-Read та Schema-on-Write?
+                        <span class="toggle-icon">+</span>
+                    </button>
+                    <div class="faq-answer">
+                        <div class="answer-content">
+                            <ul>
+                                <li><strong>Schema-on-Write:</strong> (Властиво Data Warehouse) Перед записом ви маєте створити жорстку таблицю (DDL) і визначити типи даних. Під час INSERT БД перевіряє дані, і якщо вони не збігаються (рядок у колонці INT) – запит падає. Дані безпечні, але запис марудний.</li>
+                                <li><strong>Schema-on-Read:</strong> (Властиво Data Lake). Ви записуєте на диск будь-які "сирі" файли (JSON) без перевірки. А сама "Схема" накладається зверху <em>в момент зчитування</em> (наприклад, через Amazon Athena чи Spark), коли ми задаємо типи 'на льоту'.</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <button class="faq-question">
+                        32. Опишіть формати даних Parquet та ORC. Коли їх варто використовувати?
+                        <span class="toggle-icon">+</span>
+                    </button>
+                    <div class="faq-answer">
+                        <div class="answer-content">
+                            <p>Це два популярних <strong>колонкових (Columnar)</strong> бінарних формати для зберігання Big Data. На відміну від CSV, вони мають власну схему всередині файлу.</p>
+                            <ul>
+                                <li><strong>Apache Parquet:</strong> Оптимізований для екосистеми Spark/Impala, чудово стискається (проти CSV в 5-10 разів краще) завдяки компресії (Snappy, GZIP). Ідеальний для аналітичних агрегацій та глибоких вкладених структур даних (Lists/Maps).</li>
+                                <li><strong>Apache ORC:</strong> Створювався для екосистеми Hive. Має спеціальний Light-weight індекс всередині файлів (Predicate Pushdown), завдяки чому пропускає читання цілих блоків даних, якщо вони не задовільняють умові.</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <button class="faq-question">
+                        33. Як організовується багаторівнева стратегія зберігання архівованих даних (Data Tiering)?
+                        <span class="toggle-icon">+</span>
+                    </button>
+                    <div class="faq-answer">
+                        <div class="answer-content">
+                            <p>Оскільки зберігати гігабайти "старих" даних щороку стає дуже дорого, дата-інженери використовують <strong>Storage Tiers (класи зберігання)</strong> у хмарі (наприклад AWS S3):</p>
+                            <ul>
+                                <li><strong>Hot (Standard):</strong> Дані за останні 3 місяці (місяць). Найшвидший доступ, але найдорожче зберігання. Для щоденних аналітичних дашбордів.</li>
+                                <li><strong>Warm (Infrequent Access):</strong> Дані від 3 місяців до 1 року. Зберігання дешевше, проте стягується плата за кожне вилучення (читання).</li>
+                                <li><strong>Cold (Glacier):</strong> Дані, старіші як 1 рік. Вартість зберігання копійчана, але для їх зчитування доведеться чекати від кількох хвилин до кількох годин (асинхронне відновлення для аудиту).</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <button class="faq-question">
+                        34. Що таке AWS Glue та яка роль його компонентів (Data Catalog, Crawlers, Jobs)?
+                        <span class="toggle-icon">+</span>
+                    </button>
+                    <div class="faq-answer">
+                        <div class="answer-content">
+                            <p><strong>AWS Glue</strong> — це Serverless платформа для інтеграції, обробки (ETL) та каталогізації даних в AWS.</p>
+                            <ul>
+                                <li><strong>Glue Jobs:</strong> Дозволяють запускати Spark-скрипти (в основному на Python) в ефемерному (тимчасовому) кластері без його налаштування вами. Сервіс берегроші тільки за секунди роботи пайплайну.</li>
+                                <li><strong>Glue Crawlers:</strong> Кроулери періодично сканують нові файли у S3-бакетах (JSON/Parquet), вгадують їхню схему і зберігають її у єдиний реєстр.</li>
+                                <li><strong>Glue Data Catalog:</strong> Єдиний мета-реєстр таблиць (Hive Metastore) поверх S3. Саме звідси ці таблиці бачить Amazon Athena, щоб можна було робити SQL запити до сирих файлів.</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <button class="faq-question">
+                        35. Як працюють закладки (Job Bookmarks) в AWS Glue?
+                        <span class="toggle-icon">+</span>
+                    </button>
+                    <div class="faq-answer">
+                        <div class="answer-content">
+                            <p><strong>Job Bookmarks (закладки)</strong> — це вбудований механізм відстеження стану, який дозволяє інкрементальне завантаження (Incremental ETL).</p>
+                            <p>Після кожного запуску Glue Job зберігає внутрішню позначку "я закінчив роботу ось на цьому файлі" або "ось такий останній timestamp". При наступному запуску Job буде зчитувати <em>тільки нові файли</em>, згенеровані після завершення минулого запуску, ігноруючи старі. Це запобігає дублюванню та економить час/гроші.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <button class="faq-question">
+                        36. Що таке Amazon Athena і в чому її переваги?
+                        <span class="toggle-icon">+</span>
+                    </button>
+                    <div class="faq-answer">
+                        <div class="answer-content">
+                            <p><strong>Amazon Athena</strong> — це Serverless SQL-сервіс для миттєвої аналітики сирих даних прямісінько з об'єктного сховища Amazon S3.</p>
+                            <p>Вона базується на Presto. Не потрібно крутити власні сервери і вантажити дані в базу — ви просто вказуєте SQL-запит до файлу в S3, і він миттєво виконується. Плата знімається <em>лише за 1 Терабайт просканованих даних</em> (близько $5).</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <button class="faq-question">
+                        37. Як працює AWS Lambda і які існують обмеження (Serverless)?
+                        <span class="toggle-icon">+</span>
+                    </button>
+                    <div class="faq-answer">
+                        <div class="answer-content">
+                            <p><strong>AWS Lambda</strong> — це FaaS (функції як сервіс). Ви пишете короткий код (Python, Node.js), а AWS запускає його в ізольованому мікро-контейнері ТІЛЬКИ у відповідь на подію (запит до API, поява файлу в S3, тригер CloudWatch).</p>
+                            <p><strong>Обмеження:</strong></p>
+                            <ul>
+                                <li>Максимальна тривалість виконання: <strong>15 хвилин</strong>. (Тому Lambda не підходить для масивних годинних ETL-джобок).</li>
+                                <li>Ліміт пам'яті (RAM) та зберігання (<code>/tmp</code> директорія) обмежені кількома ГБ.</li>
+                                <li><strong>Layers:</strong> Механізм зовнішнього підключення "важких" бібліотек (Pandas, Numpy) кільком Лямбдам одночасно, щоб не перевищувати ліміт розміру коду в 250MB.</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <button class="faq-question">
+                        38. Що таке Amazon RDS та як він використовується?
+                        <span class="toggle-icon">+</span>
+                    </button>
+                    <div class="faq-answer">
+                        <div class="answer-content">
+                            <p><strong>Amazon RDS (Relational Database Service)</strong> — це керований хмарний сервіс реляційних баз даних (PostgreSQL, MySQL, Oracle).</p>
+                            <p>Вам не потрібно власноруч встановлювати ядро БД на сервери. RDS автоматично бере на себе резервне копіювання (Backups), патчі безпеки ОС, мінорині оновлення рушія та надає легку настройку Multi-AZ (гаряча репліка в іншій зоні доступності для миттєвого підняття у разі падіння основної станції).</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <button class="faq-question">
+                        39. В чому ключові різниця між Amazon EMR та Batch Glue Jobs?
+                        <span class="toggle-icon">+</span>
+                    </button>
+                    <div class="faq-answer">
+                        <div class="answer-content">
+                            <ul>
+                                <li><strong>Amazon EMR (Elastic MapReduce)</strong> — повноцінний, керований вами інфраструктурний кластер (Hadoop/Spark). Дає <em>максимальний контроль</em>. Ви можете встановлювати кастомні бібліотеки рівня ОС і налаштовувати майстер/воркер ноди, вибирати залізо (Spot EC2 інстанси для здешевлення). Оплачується по годинах оренди серверів.</li>
+                                <li><strong>AWS Glue </strong> — 100% Serverless. Ви просто даєте Spark-код і чекаєте результату. Ніяких серверів, ідеально для простоти та епізодичних завдань. Але це виходить значно дорожче за годину роботи, ніж EMR, і немає можливості тонкого "тюнінгу" інфраструктури.</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <button class="faq-question">
+                        40. Що означає маскування даних (Data Masking) і для чого воно доцільне?
+                        <span class="toggle-icon">+</span>
+                    </button>
+                    <div class="faq-answer">
+                        <div class="answer-content">
+                            <p><strong>Маскування даних</strong> — це метод приховування чутливої інформації (Personal Identifiable Information – PII, як-от кредитні картки, адреси, номери телефонів).</p>
+                            <ul>
+                                <li><strong>Статичне (Static):</strong> Фізична підміна чутливих колонок на фейкові ще на етапі копіювання БД (наприклад з Production в Test середовище), щоб розробники ніколи не бачили реальних даних.</li>
+                                <li><strong>Динамічне (Dynamic):</strong> Дані на диску лежать реальні, але під час SELECT-запиту база "на льоту" приховує їх (повертає <code>***-**-2342</code>), залежно від ролі (рівня доступу) юзера, що зробив запит.</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <button class="faq-question">
+                        41. Яка різниця між ETL та ELT, і коли який підхід використовувати?
+                        <span class="toggle-icon">+</span>
+                    </button>
+                    <div class="faq-answer">
+                        <div class="answer-content">
+                            <ul>
+                                <li><strong>ETL (Extract, Transform, Load):</strong> Спочатку дістаємо дані, трансформуємо (очищуємо) їх на <em>нашому сервері</em> (наприклад, за допомогою Spark), і тільки потім кладемо у Сховище. Використовується, коли дані надто брудні, або коли Сховище дороге (не хочемо платити за обчислення в ньому).</li>
+                                <li><strong>ELT (Extract, Load, Transform):</strong> Спочатку сирі дані вантажаться у Сховище, а потім трансформуються потужностями самого Сховища (через dbt / SQL-запити). Це сучасний стандарт для хмарних MPP (Snowflake, BigQuery), які миттєво обробляють гігабайти всередині себе.</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <button class="faq-question">
+                        42. Як працюють кластерні та некластерні індекси в SQL?
+                        <span class="toggle-icon">+</span>
+                    </button>
+                    <div class="faq-answer">
+                        <div class="answer-content">
+                            <ul>
+                                <li><strong>Кластерний індекс:</strong> Визначає фізичний порядок рядків у таблиці. Саме тому він буває тільки один (зазвичай це Primary Key). Структурований як дерево пошуку (B-Tree). Дані зберігаються в самих листках дерева.</li>
+                                <li><strong>Некластерний індекс:</strong> Дані не сортуються фізично. Індекс — це окрема структура (довідник у кінці книжки), де лежить копія колонки та вказівник (pointer) на її фізичне місце на диску. Їх може бути багато в одній таблиці. Пошук триває трохи довше.</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <button class="faq-question">
+                        43. Що таке MPP-бази (Massively Parallel Processing) і як туди завантажувати дані?
+                        <span class="toggle-icon">+</span>
+                    </button>
+                    <div class="faq-answer">
+                        <div class="answer-content">
+                            <p><strong>MPP</strong> — це бази даних, що складаються з десятків обчислювальних серверів, які обробляють запити паралельно (напр., Redshift, Teradata).</p>
+                            <p><strong>Завантаження:</strong> Ніколи не використовуйте стандартні <code>INSERT INTO</code> для мільйонів рядків, бо воно піде через один вузол-лідер. Завжди використовуйте масові утиліти (наприклад, команду <code>COPY</code> в Redshift для завантаження багатьох файлів із S3 відразу всіма воркерами паралельно).</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <button class="faq-question">
+                        44. Чи є сенс створювати індекси у Big Data (з колонковими або OLAP базами)?
+                        <span class="toggle-icon">+</span>
+                    </button>
+                    <div class="faq-answer">
+                        <div class="answer-content">
+                            <p>У класичному розумінні B-Tree індексів (як у Postgres) — рідко, адже вони займають занадто багато місця для Терабайтів і гальмують масовий запис. Натомість використовують:</p>
+                            <ul>
+                                <li><strong>Partitioning:</strong> Сканується лише потрібна директорія.</li>
+                                <li><strong>Zone Maps (Min-Max Index):</strong> у форматах Parquet / ORC кожен блок описує своє найменше і найбільше значення. Рушій "перестрибує" цілі файли, якщо значення <code>WHERE x = 5</code> лежить поза блоком `[10...50]`.</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <button class="faq-question">
+                        45. Чи писали ви тести якості даних (Data Quality)? Які інструменти використовували?
+                        <span class="toggle-icon">+</span>
+                    </button>
+                    <div class="faq-answer">
+                        <div class="answer-content">
+                            <p>Контроль якості (QA) є критичним, щоб BI звіти не обманювали бізнес. Найпопулярніший фреймворк: <strong>Great Expectations</strong>.</p>
+                            <p>Цей інструмент дозволяє задати "очікування" у вигляді простого тексту або JSON (напр. "значення price має бути більше 0", "колонка email не має бути пустою"). Пайплайн запускає цей тест на свіжому DataFrame; якщо відсоток помилок критичний — завантаження зупиняється намертво (аудит), а дев-команді надсилається алерт.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <button class="faq-question">
+                        46. Що таке Dead Letter Queue (DLQ) при обробці потоків?
+                        <span class="toggle-icon">+</span>
+                    </button>
+                    <div class="faq-answer">
+                        <div class="answer-content">
+                            <p><strong>Черга "мертвих" повідомлень</strong> — це патерн архітектури обробки повідомлень.</p>
+                            <p>Якщо ваш Spark Streaming/Kafka пайплайн отримує пошкоджений або некоректний JSON-об'єкт, який не може бути розпарсеним чи обробленим, щоб не "падати" і не зупиняти обробку всього потоку, він "відловлює" цей об'єкт (Exception) і записує його у спеціальну резервну чергу або S3-бакет — <em>DLQ</em>. Там інженери пізніше зможуть проаналізувати поламане повідомлення та повторно завантажити його.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <button class="faq-question">
+                        47. Що таке Auto Scaling Group у AWS EC2 і для чого потрібна?
+                        <span class="toggle-icon">+</span>
+                    </button>
+                    <div class="faq-answer">
+                        <div class="answer-content">
+                            <p><strong>ASG</strong> — це можливість хмари автоматично підіймати або видаляти віртуальні сервери (інстанси) залежно від навантаження.</p>
+                            <p>Наприклад, якщо завантаженість процесорів поточних серверів перевищує 80%, ASG автоматично купує і запускає ще два сервери та підключає їх до Load Balancer. Якщо навантаження падає до 20% вночі, ASG "вбиває" зайві сервери, щоб компанія не переплачувала.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <button class="faq-question">
+                        48. Які методи оптимізації SQL-запитів ви вважаєте найефективнішими?
+                        <span class="toggle-icon">+</span>
+                    </button>
+                    <div class="faq-answer">
+                        <div class="answer-content">
+                            <ul>
+                                <li>Уникання `SELECT *`. Зчитуйте лише необхідні колонки.</li>
+                                <li>Фільтрація (`WHERE`) та Партиціювання <em>до</em> застосування важких `JOIN`. (Filter early).</li>
+                                <li>Уникання `DISTINCT`, якщо можливо використовувати `GROUP BY`, і уникання підзапитів у секції `WHERE` (краще переписати через `LEFT JOIN`).</li>
+                                <li>Уникання функцій на індексованих стовпцях з лівого боку (наприклад <code>WHERE YEAR(date) = 2023</code> — це погано, ігнорує індекс. Правильно: <code>WHERE date &gt;= '2023-01-01'</code>).</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <button class="faq-question">
+                        49. Що таке ідемпотентність і чому вона важлива для пайплайнів?
+                        <span class="toggle-icon">+</span>
+                    </button>
+                    <div class="faq-answer">
+                        <div class="answer-content">
+                            <p><strong>Ідемпотентність</strong> — це властивість процесу (pipeline), коли багаторазовий його запуск з тими ж вхідними параметрами дає один і той же фінальний результат у БД (без дублювання даних).</p>
+                            <p>Вона досягається, наприклад, тим, що на початку скрипта ми виконуємо <code>DELETE FROM tgt WHERE date = 'поточна'</code>, а потім <code>INSERT</code>, замість просто виконання "сліпого" інсерту. Або за рахунок <code>UPSERT/MERGE</code> (за первинним ключем), яка при повторному запуску тільки оновлює ті самі рядки значеннями, нічого не ламаючи.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <button class="faq-question">
+                        50. У чому різниця між статичним і динамічним маскуванням даних (Data Masking)?
+                        <span class="toggle-icon">+</span>
+                    </button>
+                    <div class="faq-answer">
+                        <div class="answer-content">
+                            <p><strong>Статичне маскування:</strong> Фізичний процес заміни конфіденційних даних у базі даних (наприклад, перед створенням копії для розробників/тестувальників). Оригінальні дані втрачаються назавжди в цій копії.</p>
+                            <p><strong>Динамічне маскування:</strong> Справжні дані залишаються в безпеці на диску, але "маскуються" (у вигляді ***-**-253) на льоту під час зчитування інформації базою даних, зважаючи на привілеї чи роль користувача, що робить цей запит (наприклад, касир бачить лише останні 4 цифри картки).</p>
+                        </div>
+                    </div>
+                </div>
             </div>
 
             <!-- Senior Питання -->
