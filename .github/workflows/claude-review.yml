@@ -81,6 +81,15 @@ jobs:
         env:
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
         run: |
+          if [ -z "$ANTHROPIC_API_KEY" ]; then
+            cat > /tmp/review.txt << 'REVIEW_EOF'
+            ## Claude Code Review
+
+            Skipped: `ANTHROPIC_API_KEY` is not available for this pull request.
+            REVIEW_EOF
+            exit 0
+          fi
+
           PREV=$(cat /tmp/previous_review.txt)
           git diff origin/${{ github.base_ref }}...HEAD > /tmp/diff.txt
 
