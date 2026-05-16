@@ -11,7 +11,6 @@ Follow these steps exactly:
    Co-Authored-By: Claude Sonnet 4.6 <noreply@anthropic.com>
 7. Detect the base branch using this logic (run as a single shell block):
    ```bash
-   CURRENT=$(git rev-parse --abbrev-ref HEAD)
    BASE=$(git log --decorate --simplify-by-decoration --oneline HEAD \
      | grep -v "HEAD" \
      | head -1 \
