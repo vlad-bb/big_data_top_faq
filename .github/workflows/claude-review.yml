@@ -13,8 +13,10 @@ concurrency:
 # ЕКЗАМЕН: permissions block
 # За замовчуванням GITHUB_TOKEN має тільки READ права на все.
 # Писати коментарі до PR = write операція → потрібен явний дозвіл.
-# Без цього блоку крок "gh pr comment" поверне HTTP 403 Forbidden.
+# actions/checkout також потребує доступу до contents, бо при явному permissions
+# усі не вказані scope стають none.
 permissions:
+  contents: read
   pull-requests: write
 
 jobs:
