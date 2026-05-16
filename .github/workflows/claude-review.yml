@@ -82,16 +82,21 @@ jobs:
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
         run: |
           if [ -z "$ANTHROPIC_API_KEY" ]; then
-            cat > /tmp/review.txt << 'REVIEW_EOF'
-            ## Claude Code Review
-
-            Skipped: `ANTHROPIC_API_KEY` is not available for this pull request.
-            REVIEW_EOF
+            printf '%s\n' \
+              '## Claude Code Review' \
+              '' \
+              'Skipped: `ANTHROPIC_API_KEY` is not available for this pull request.' \
+              > /tmp/review.txt
             exit 0
           fi
 
           PREV=$(cat /tmp/previous_review.txt)
           git diff origin/${{ github.base_ref }}...HEAD > /tmp/diff.txt
+
+          # Обрізаємо попередній review щоб не спалювати зайві токени
+          if [ -n "$PREV" ] && [ "${#PREV}" -gt 3000 ]; then
+            PREV="${PREV:0:3000}...[truncated]"
+          fi
 
           # Будуємо промпт у файлі щоб безпечно включити попередній review
           cat > /tmp/prompt.txt << 'PROMPT_EOF'
@@ -105,11 +110,6 @@ jobs:
 
           if [ -n "$PREV" ]; then
             printf '\nPrevious review findings — do NOT repeat resolved issues, flag only NEW or still-unaddressed ones:\n<previous_review>\n%s\n</previous_review>\n' "$PREV" >> /tmp/prompt.txt
-          fi
-
-          # Обрізаємо попередній review щоб не спалювати зайві токени
-          if [ -n "$PREV" ] && [ "${#PREV}" -gt 3000 ]; then
-            PREV="${PREV:0:3000}...[truncated]"
           fi
 
           SCHEMA='{"type":"object","properties":{"summary":{"type":"string"},"issues":{"type":"array","items":{"type":"object","properties":{"severity":{"type":"string","enum":["high","medium","low"]},"file":{"type":"string"},"description":{"type":"string"}},"required":["severity","description"]}}},"required":["summary","issues"]}'
