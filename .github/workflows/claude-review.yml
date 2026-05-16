@@ -1,0 +1,80 @@
+# ЕКЗАМЕН: GitHub читає workflow тільки з .github/workflows/ (з крапкою перед github)
+# Файл у github/workflows/ (без крапки) GitHub просто ігнорує.
+name: Claude Code Review
+
+on:
+  pull_request:
+    types: [opened, synchronize]
+
+# ЕКЗАМЕН: permissions block
+# За замовчуванням GITHUB_TOKEN має тільки READ права на все.
+# Писати коментарі до PR = write операція → потрібен явний дозвіл.
+# Без цього блоку крок "gh pr comment" поверне HTTP 403 Forbidden.
+permissions:
+  pull-requests: write
+
+jobs:
+  code-review:
+    runs-on: ubuntu-latest
+    steps:
+
+      # ЕКЗАМЕН: fetch-depth: 0
+      # За замовчуванням actions/checkout робить "shallow clone" — тільки 1 останній коміт.
+      # git diff origin/$base...HEAD потребує повну git-историю щоб знайти
+      # спільного предка між гілками. fetch-depth: 0 завантажує всі коміти.
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      # Встановлюємо Claude Code CLI глобально.
+      # Після цього кроку команда "claude" доступна в усіх наступних steps.
+      - name: Install Claude Code
+        run: npm install -g @anthropic-ai/claude-code
+
+      # ЕКЗАМЕН: Це головний крок — тут всі ключові концепції:
+      #
+      # 1. env: ANTHROPIC_API_KEY — Claude Code CLI автентифікується через цю змінну.
+      #    Значення береться з GitHub Secrets (Settings → Secrets → Actions).
+      #    Ніколи не хардкодити ключ прямо в YAML.
+      #
+      # 2. git diff origin/${{ github.base_ref }}...HEAD
+      #    Генерує unified diff між PR-гілкою і base-гілкою (зазвичай main).
+      #    github.base_ref — вбудована змінна GitHub Actions з назвою target-гілки.
+      #
+      # 3. | (Unix pipe)
+      #    Передає вивід git diff прямо в stdin команди claude.
+      #    Claude читає цей diff як "документ для аналізу".
+      #
+      # 4. claude -p "prompt" — НАЙВАЖЛИВІШИЙ ФЛАГ для CI/CD:
+      #    -p = non-interactive / print mode
+      #    БЕЗ -p: Claude відкриває інтерактивний REPL і job висить вічно.
+      #    З -p:   Claude читає prompt (аргумент) + stdin (diff), виводить
+      #            відповідь в stdout і виходить з процесу.
+      #
+      # 5. > /tmp/review.txt — зберігаємо відповідь у файл для наступного кроку.
+      - name: Run Claude Code Review
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+        run: |
+          git diff origin/${{ github.base_ref }}...HEAD | \
+            claude -p "You are a code reviewer for a static web project (HTML/CSS/JS).
+          Analyze the git diff and check for: bugs, security issues, accessibility problems,
+          and code quality. Be concise. Format your response as markdown." \
+            > /tmp/review.txt
+
+      # ЕКЗАМЕН: GITHUB_TOKEN
+      # Це вбудований секрет — GitHub створює його автоматично для КОЖНОГО workflow run.
+      # Налаштовувати його в Settings репозиторію НЕ потрібно (на відміну від ANTHROPIC_API_KEY).
+      # gh CLI (попередньо встановлений на ubuntu-latest runner) використовує
+      # цей токен для виклику GitHub API і публікації коментаря до PR.
+      #
+      # --body-file замість --body: безпечніший спосіб передати багаторядковий текст,
+      # щоб уникнути проблем з екрануванням спеціальних символів у shell.
+      - name: Post review as PR comment
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh pr comment ${{ github.event.pull_request.number }} \
+            --repo ${{ github.repository }} \
+            --body-file /tmp/review.txt
