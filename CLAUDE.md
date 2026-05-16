@@ -32,3 +32,13 @@ Questions and answers are written in Ukrainian. Technical terms (Hadoop, Spark, 
 ## Deployment
 
 Push to the `main` branch; GitHub Pages serves `index.html` from the repository root.
+
+## Code Review Criteria
+
+When reviewing PRs via CI, check for:
+
+- **Security**: XSS vulnerabilities (`innerHTML`, `eval`, unescaped user input), missing input sanitization
+- **Accessibility**: missing `aria-*` attributes, unlabeled interactive elements, keyboard navigation issues
+- **JavaScript**: event listener leaks, missing null checks on DOM queries, incorrect accordion state logic
+- **CSS**: broken responsive layout (mobile < 600px), overridden custom properties that break theming
+- **Content**: Ukrainian text quality, correct pluralization forms (1 / 2-4 / 5+), technical terms left in English
