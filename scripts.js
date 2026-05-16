@@ -20,6 +20,8 @@ function goBack() {
     document.getElementById('level-cards').style.display = 'grid';
     document.getElementById('questions-container').style.display = 'none';
     document.querySelectorAll('.faq-item').forEach(item => item.classList.remove('active'));
+    // Bug 3 fix: clear active level so DOM state accurately reflects level-cards view
+    document.querySelectorAll('.question-list').forEach(list => list.classList.remove('active'));
 }
 
 function clearSearch() {
@@ -27,10 +29,51 @@ function clearSearch() {
     document.getElementById('search-results').style.display = 'none';
 }
 
-function highlight(text, query) {
-    if (!query) return text;
+// Bug 2 fix: correct Ukrainian pluralization using mod10/mod100 rules
+function pluralize(count) {
+    const mod10 = count % 10;
+    const mod100 = count % 100;
+    if (mod100 >= 11 && mod100 <= 14) return 'питань';
+    if (mod10 === 1) return 'питання';
+    if (mod10 >= 2 && mod10 <= 4) return 'питання';
+    return 'питань';
+}
+
+// Bug 1 fix: XSS-safe highlight using TreeWalker to operate only on text nodes
+function highlightNode(container, query) {
+    if (!query) return;
     const escaped = query.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-    return text.replace(new RegExp(`(${escaped})`, 'gi'), '<mark>$1</mark>');
+    const regex = new RegExp(`(${escaped})`, 'gi');
+
+    const walker = document.createTreeWalker(container, NodeFilter.SHOW_TEXT, null);
+    const textNodes = [];
+    let node;
+    while ((node = walker.nextNode())) {
+        textNodes.push(node);
+    }
+
+    textNodes.forEach(textNode => {
+        const text = textNode.textContent;
+        if (!regex.test(text)) return;
+        regex.lastIndex = 0;
+
+        const fragment = document.createDocumentFragment();
+        let lastIndex = 0;
+        let match;
+        while ((match = regex.exec(text)) !== null) {
+            if (match.index > lastIndex) {
+                fragment.appendChild(document.createTextNode(text.slice(lastIndex, match.index)));
+            }
+            const mark = document.createElement('mark');
+            mark.textContent = match[1];
+            fragment.appendChild(mark);
+            lastIndex = regex.lastIndex;
+        }
+        if (lastIndex < text.length) {
+            fragment.appendChild(document.createTextNode(text.slice(lastIndex)));
+        }
+        textNode.parentNode.replaceChild(fragment, textNode);
+    });
 }
 
 function runSearch(query) {
@@ -42,18 +85,14 @@ function runSearch(query) {
 
     if (!query) {
         searchResults.style.display = 'none';
-        // Restore whichever view was active before search
-        if (questionsContainer.dataset.wasVisible === 'true') {
+        // Bug 3 fix: derive which view to restore from DOM state (active question-list)
+        // instead of relying on a cached dataset flag that can desync across navigation.
+        if (document.querySelector('.question-list.active')) {
             questionsContainer.style.display = 'block';
         } else {
             levelCards.style.display = 'grid';
         }
         return;
-    }
-
-    // Remember which view to restore when search is cleared
-    if (searchResults.style.display === 'none') {
-        questionsContainer.dataset.wasVisible = questionsContainer.style.display === 'block' ? 'true' : 'false';
     }
 
     levelCards.style.display = 'none';
@@ -71,8 +110,8 @@ function runSearch(query) {
         items.forEach(item => {
             const questionEl = item.querySelector('.faq-question');
             const answerEl = item.querySelector('.answer-content');
-            const questionText = questionEl.innerText;
-            const answerText = answerEl.innerText;
+            const questionText = questionEl.textContent;
+            const answerText = answerEl.textContent;
 
             if (
                 questionText.toLowerCase().includes(lowerQuery) ||
@@ -85,7 +124,6 @@ function runSearch(query) {
 
                 // Inject level badge into question button
                 const btn = clone.querySelector('.faq-question');
-                const icon = btn.querySelector('.toggle-icon');
                 const rawText = questionEl.childNodes[0].textContent.trim();
                 btn.innerHTML = '';
 
@@ -94,7 +132,7 @@ function runSearch(query) {
                 badge.textContent = levelLabels[level];
 
                 const textSpan = document.createElement('span');
-                textSpan.innerHTML = highlight(rawText, query);
+                textSpan.textContent = rawText;
                 textSpan.style.flex = '1';
 
                 const newIcon = document.createElement('span');
@@ -105,14 +143,14 @@ function runSearch(query) {
                 btn.appendChild(textSpan);
                 btn.appendChild(newIcon);
 
-                // Highlight answer
+                // Bug 1 fix: highlight text nodes only, never touch HTML attributes or tags
+                highlightNode(textSpan, query);
                 const answerContent = clone.querySelector('.answer-content');
-                answerContent.innerHTML = highlight(answerContent.innerHTML, query);
+                highlightNode(answerContent, query);
 
                 // Accordion for the clone
                 btn.addEventListener('click', () => {
-                    const isActive = clone.classList.contains('active');
-                    clone.classList.toggle('active', !isActive);
+                    clone.classList.toggle('active');
                 });
 
                 resultsList.appendChild(clone);
@@ -120,9 +158,10 @@ function runSearch(query) {
         });
     });
 
+    // Bug 2 fix: use correct Ukrainian pluralization
     countEl.textContent = count === 0
         ? 'Нічого не знайдено'
-        : `Знайдено: ${count} ${count === 1 ? 'питання' : count < 5 ? 'питання' : 'питань'}`;
+        : `Знайдено: ${count} ${pluralize(count)}`;
 }
 
 document.addEventListener('DOMContentLoaded', () => {

@@ -14,13 +14,17 @@ Open `index.html` directly in a browser. No server, no build tools, no dependenc
 
 Three files form the entire application:
 
-- **`index.html`** — Data and markup. Contains all 125 FAQ items split across three hidden `<section>` elements (`#junior-questions`, `#middle-questions`, `#senior-questions`). Each item is a `.faq-item` div with a `.faq-question` button and a `.faq-answer` div. The level-selection screen (`#level-selection`) is shown by default.
+- **`index.html`** — Data and markup. Contains all 177 FAQ items split across three hidden `<div>` elements (`#junior-questions`, `#middle-questions`, `#senior-questions`): 49 Junior, 102 Middle, 26 Senior. Each item is a `.faq-item` div with a `.faq-question` button and a `.faq-answer` div. The level-selection screen (`#level-cards`) is shown by default. A search input (`#search-input`) in the header filters across all levels.
 
-- **`styles.css`** — Theming via CSS custom properties, 3-column grid for the level cards, accordion animation with `max-height` transitions (0 → 1000px), and a 900px-max-width container.
+- **`styles.css`** — Theming via CSS custom properties, 3-column grid for the level cards, accordion animation with `max-height` transitions (0 → 1000px), a 900px-max-width container, and search/badge styles.
 
-- **`scripts.js`** — Three responsibilities:
+- **`scripts.js`** — Responsibilities:
   - `selectLevel(level)` hides the level-selection screen and shows the matching question section.
-  - `goBack()` reverses that.
+  - `goBack()` reverses that and clears the active level selection.
+  - `pluralize(count)` returns the correct Ukrainian plural form for a count using mod10/mod100 rules.
+  - `highlightNode(container, query)` highlights search matches inside a DOM node by walking text nodes only (XSS-safe; never modifies HTML attributes or tag names).
+  - `runSearch(query)` filters all FAQ items by query, renders cloned results with level badges and highlighted matches, and updates the result count.
+  - A debounced `input` listener on `#search-input` drives `runSearch`.
   - A delegated click listener on `.faq-question` toggles `.active` on the parent `.faq-item`, which drives the CSS accordion open/close.
 
 State is held entirely in the DOM via CSS class toggling (`.active`). There is no framework, bundler, or package manager.
