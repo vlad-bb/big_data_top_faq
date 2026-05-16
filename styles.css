@@ -42,6 +42,63 @@ h1 {
     font-size: 1.1rem;
 }
 
+/* Search */
+.search-wrapper {
+    margin-top: 24px;
+}
+
+.search-input {
+    width: 100%;
+    padding: 14px 18px;
+    font-size: 1rem;
+    font-family: 'Inter', sans-serif;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    background: var(--surface);
+    color: var(--text-main);
+    box-shadow: var(--shadow);
+    outline: none;
+    box-sizing: border-box;
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.search-input:focus {
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
+}
+
+.search-input::placeholder {
+    color: var(--text-muted);
+}
+
+.search-count {
+    color: var(--text-muted);
+    font-size: 0.9rem;
+    margin-bottom: 16px;
+}
+
+.level-badge {
+    display: inline-block;
+    font-size: 0.72rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    padding: 2px 8px;
+    border-radius: 4px;
+    margin-right: 10px;
+    background: #EFF6FF;
+    color: var(--primary);
+    border: 1px solid #BFDBFE;
+    flex-shrink: 0;
+}
+
+mark {
+    background: #FEF08A;
+    color: inherit;
+    border-radius: 2px;
+    padding: 0 1px;
+}
+
 /* Level Cards (Main Page) */
 .level-cards {
     display: grid;

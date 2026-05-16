@@ -17,6 +17,10 @@
     <div class="container">
         <header>
             <h1>Big Data Interview FAQ</h1>
+            <div class="search-wrapper">
+                <input type="search" id="search-input" class="search-input"
+                    placeholder="Пошук по питаннях та відповідях..." autocomplete="off">
+            </div>
         </header>
 
         <!-- Головна сторінка з картками (ролями) -->
@@ -36,6 +40,12 @@
                 <h2>Senior</h2>
                 <p>Архітектура та оптимізація</p>
             </div>
+        </div>
+
+        <!-- Результати пошуку -->
+        <div id="search-results" style="display: none;">
+            <p id="search-count" class="search-count"></p>
+            <div id="search-results-list"></div>
         </div>
 
         <!-- Область питань, спочатку прихована -->
@@ -1684,6 +1694,1165 @@
                         <div class="answer-content">
                             <p><strong>Статичне маскування:</strong> Фізичний процес заміни конфіденційних даних у базі даних (наприклад, перед створенням копії для розробників/тестувальників). Оригінальні дані втрачаються назавжди в цій копії.</p>
                             <p><strong>Динамічне маскування:</strong> Справжні дані залишаються в безпеці на диску, але "маскуються" (у вигляді ***-**-253) на льоту під час зчитування інформації базою даних, зважаючи на привілеї чи роль користувача, що робить цей запит (наприклад, касир бачить лише останні 4 цифри картки).</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <button class="faq-question">
+                        51. Як організувати обробку великих потоків даних у реальному часі за допомогою Kafka або Airflow?
+                        <span class="toggle-icon">+</span>
+                    </button>
+                    <div class="faq-answer">
+                        <div class="answer-content">
+                            <p><strong>Apache Kafka</strong> є де-факто стандартом для обробки потоків даних у реальному часі. Основна архітектура включає продюсерів (producers), які публікують повідомлення у топіки, та консюмерів (consumers), які їх зчитують. Для складної обробки використовують Kafka Streams або ksqlDB безпосередньо поверх Kafka.</p>
+                            <p>Типовий підхід до побудови real-time pipeline:</p>
+                            <ul>
+                                <li><strong>Ingestion:</strong> дані надходять від різних джерел (IoT, логи, транзакції) до Kafka-топіків із партиціонуванням для паралельної обробки.</li>
+                                <li><strong>Processing:</strong> Kafka Streams або Apache Flink/Spark Streaming зчитують дані, виконують трансформації, агрегації, join-и між потоками.</li>
+                                <li><strong>Sink:</strong> результати записуються до бази даних, Data Warehouse або іншого Kafka-топіку.</li>
+                            </ul>
+                            <p><strong>Apache Airflow</strong> не призначений для обробки потоків у реальному часі — це оркестратор пакетних (batch) DAG-задач. Однак Airflow можна використовувати для запуску та моніторингу стрімінгових застосунків, тригерів завдань на основі розкладу або подій (через Sensors), а також для управління пайплайнами з мікро-батчами (наприклад, кожні 5 хвилин).</p>
+                            <p>Ключові практики: правильне налаштування груп консюмерів (consumer groups), управління offset'ами, встановлення retention period для топіків, моніторинг consumer lag.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <button class="faq-question">
+                        52. Як забезпечується паралельне виконання завдань у Spark та інших системах обробки?
+                        <span class="toggle-icon">+</span>
+                    </button>
+                    <div class="faq-answer">
+                        <div class="answer-content">
+                            <p>У <strong>Apache Spark</strong> паралелізм досягається через розбиття даних на партиції (partitions). Кожна партиція обробляється окремим завданням (task), а задачі виконуються паралельно на різних executor'ах у кластері.</p>
+                            <ul>
+                                <li><strong>Driver</strong> координує виконання, будує DAG операцій та розбиває його на стадії (stages) і завдання (tasks).</li>
+                                <li><strong>Executor</strong> — JVM-процес на worker-вузлі, який виконує tasks та зберігає проміжні дані в пам'яті або на диску.</li>
+                                <li><strong>Кількість партицій</strong> визначає рівень паралелізму: занадто мало — недовикористання ресурсів, занадто багато — overhead на планування.</li>
+                            </ul>
+                            <p>Для оптимального паралелізму рекомендується мати від 2 до 4 партицій на кожне ядро CPU в кластері. Кількість партицій можна регулювати через <code>repartition()</code> або <code>coalesce()</code>, а для shuffle-операцій — параметром <code>spark.sql.shuffle.partitions</code>.</p>
+                            <p>В інших системах: <strong>Hadoop MapReduce</strong> паралелізує через map-задачі (одна на блок HDFS); <strong>Flink</strong> використовує паралельність операторів (operator parallelism); <strong>Dask</strong> розбиває DataFrame на chunks і виконує їх паралельно.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <button class="faq-question">
+                        53. Що таке Change Data Capture (CDC)? Поділіться досвідом реалізації CDC.
+                        <span class="toggle-icon">+</span>
+                    </button>
+                    <div class="faq-answer">
+                        <div class="answer-content">
+                            <p><strong>Change Data Capture (CDC)</strong> — це підхід до відстеження та захоплення змін у базі даних (INSERT, UPDATE, DELETE) у реальному часі або майже в реальному часі, щоб ці зміни можна було передати іншим системам.</p>
+                            <p>Основні методи реалізації CDC:</p>
+                            <ul>
+                                <li><strong>Log-based CDC:</strong> зчитування transaction log бази даних (WAL у PostgreSQL, binlog у MySQL). Найефективніший підхід — не навантажує БД. Інструменти: <em>Debezium</em>, <em>AWS DMS</em>.</li>
+                                <li><strong>Trigger-based CDC:</strong> тригери в БД записують зміни до окремої таблиці аудиту. Простий у реалізації, але навантажує БД.</li>
+                                <li><strong>Timestamp-based CDC:</strong> запити вибирають записи, змінені після певної мітки часу (поле <code>updated_at</code>). Не відстежує DELETE.</li>
+                            </ul>
+                            <p>Типова архітектура з Debezium: Debezium-конектор зчитує WAL PostgreSQL → публікує події до Kafka-топіків → консюмер (Spark Streaming, Flink) обробляє та завантажує до Data Warehouse або Data Lake. Це забезпечує low-latency реплікацію даних без впливу на продуктивність джерела.</p>
+                            <p>Виклики CDC: управління схемою (schema evolution), обробка початкового snapshot, забезпечення exactly-once semantics, обробка великих транзакцій.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <button class="faq-question">
+                        54. Які ключові завдання вирішує дата-каталог? Що таке ETL та ELT? Коли використовувати кожен підхід? Які ETL-інструменти поширені у Big Data?
+                        <span class="toggle-icon">+</span>
+                    </button>
+                    <div class="faq-answer">
+                        <div class="answer-content">
+                            <p><strong>Дата-каталог (Data Catalog)</strong> вирішує такі завдання:</p>
+                            <ul>
+                                <li>Централізований реєстр усіх наявних датасетів, таблиць, API та звітів.</li>
+                                <li>Метадані: опис, власник, схема, lineage (походження), якість даних.</li>
+                                <li>Data Discovery — дозволяє аналітикам знаходити потрібні дані самостійно.</li>
+                                <li>Governance — контроль доступу, відповідність регуляторним вимогам (GDPR).</li>
+                            </ul>
+                            <p><strong>ETL (Extract → Transform → Load)</strong>: дані спочатку вилучаються з джерела, трансформуються у проміжному шарі (staging), а потім завантажуються у вже очищеному вигляді до DWH. Підходить для традиційних DWH із суворою схемою.</p>
+                            <p><strong>ELT (Extract → Load → Transform)</strong>: дані завантажуються у сирому вигляді до Data Lake або хмарного DWH (BigQuery, Snowflake, Redshift), а трансформації виконуються вже всередині сховища потужностями самого сховища. Підходить для хмарних архітектур із масштабованими обчислювальними ресурсами.</p>
+                            <p>Популярні ETL/ELT-інструменти у Big Data: <strong>Apache Spark</strong>, <strong>Apache Beam</strong>, <strong>dbt</strong> (для ELT трансформацій у DWH), <strong>Fivetran</strong>, <strong>Airbyte</strong> (готові конектори), <strong>AWS Glue</strong>, <strong>Azure Data Factory</strong>, <strong>Google Dataflow</strong>.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <button class="faq-question">
+                        55. Як забезпечити безпеку та відповідність стандартам при оркестрації робочих процесів?
+                        <span class="toggle-icon">+</span>
+                    </button>
+                    <div class="faq-answer">
+                        <div class="answer-content">
+                            <p>Безпека при оркестрації (наприклад, в Apache Airflow) охоплює кілька рівнів:</p>
+                            <ul>
+                                <li><strong>Управління секретами:</strong> ніколи не зберігати паролі та ключі в коді DAG. Використовувати Airflow Connections/Variables, інтеграцію з HashiCorp Vault, AWS Secrets Manager або Azure Key Vault.</li>
+                                <li><strong>RBAC (Role-Based Access Control):</strong> Airflow підтримує ролі (Admin, Op, User, Viewer), що обмежують доступ до DAG, з'єднань та логів.</li>
+                                <li><strong>Автентифікація:</strong> налаштування LDAP/OAuth/SSO для входу в Airflow UI. Уникати anonymous access.</li>
+                                <li><strong>Мережева безпека:</strong> розміщення компонентів у приватній підмережі, TLS для веб-сервера та з'єднань з БД метаданих.</li>
+                            </ul>
+                            <p>Відповідність стандартам (Compliance): аудит-логи всіх дій у системі, маскування чутливих даних у логах, контроль доступу до DAG через Git-репозиторій (GitOps), регулярний огляд прав доступу. Для GDPR — обмеження збору персональних даних у пайплайнах, реалізація права на видалення.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <button class="faq-question">
+                        56. Які методи завантаження даних до MPP-баз даних ви вважаєте найефективнішими?
+                        <span class="toggle-icon">+</span>
+                    </button>
+                    <div class="faq-answer">
+                        <div class="answer-content">
+                            <p><strong>MPP (Massively Parallel Processing)</strong> бази даних (Redshift, Snowflake, BigQuery, Greenplum) оптимізовані для масового паралельного завантаження. Найефективніші методи:</p>
+                            <ul>
+                                <li><strong>Bulk Load / COPY команда:</strong> завантаження з файлів (S3, GCS, ADLS) за допомогою нативних COPY-команд. Це набагато швидше за INSERT по одному рядку. Наприклад, <code>COPY INTO</code> у Snowflake або <code>COPY FROM S3</code> у Redshift.</li>
+                                <li><strong>Columnar формати:</strong> завантаження Parquet або ORC файлів значно ефективніше за CSV — менший розмір, вбудована схема, краща компресія.</li>
+                                <li><strong>Паралельне завантаження:</strong> розбиття файлів на частини та паралельне завантаження декількома потоками.</li>
+                                <li><strong>Staged loading:</strong> завантаження до проміжної (staging) таблиці, а потім MERGE/UPSERT до цільової таблиці для обробки оновлень.</li>
+                                <li><strong>Партиціонування:</strong> завантаження у відповідні партиції (наприклад, по даті) замість повного перезапису таблиці.</li>
+                            </ul>
+                            <p>Антипатерни: уникати одиночних INSERT-запитів, завантаження через JDBC без batch mode, не використовувати надмірну кількість дрібних файлів (small files problem).</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <button class="faq-question">
+                        57. Які стратегії забезпечення якості даних ви використовуєте для Big Data? Як запобігти невідповідностям під час ETL?
+                        <span class="toggle-icon">+</span>
+                    </button>
+                    <div class="faq-answer">
+                        <div class="answer-content">
+                            <p>Стратегії забезпечення якості даних (Data Quality) у Big Data:</p>
+                            <ul>
+                                <li><strong>Профілювання даних (Data Profiling):</strong> аналіз розподілу значень, унікальності, null-відсотку, діапазонів до початку завантаження.</li>
+                                <li><strong>Валідація схеми:</strong> перевірка відповідності типів та структури вхідних даних очікуваній схемі (Great Expectations, dbt tests).</li>
+                                <li><strong>Бізнес-правила:</strong> перевірка референційної цілісності, діапазонів значень, обов'язкових полів.</li>
+                                <li><strong>Reconciliation:</strong> звірка агрегованих показників між джерелом та цільовою системою (кількість рядків, сума ключових метрик).</li>
+                            </ul>
+                            <p>Запобігання невідповідностям під час ETL:</p>
+                            <ul>
+                                <li>Ідемпотентність операцій — повторний запуск не призводить до дублікатів.</li>
+                                <li>Транзакційність — або всі дані завантажені, або жодні (атомарність через staging + swap).</li>
+                                <li>Dead Letter Queue — проблемні записи відправляються до окремого сховища для аналізу, а не блокують весь пайплайн.</li>
+                                <li>Data lineage — відстеження походження кожного поля для швидкого розслідування аномалій.</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <button class="faq-question">
+                        58. Які інструменти ви використовуєте для управління безпекою, якістю та доступом до даних?
+                        <span class="toggle-icon">+</span>
+                    </button>
+                    <div class="faq-answer">
+                        <div class="answer-content">
+                            <p><strong>Безпека та управління доступом:</strong></p>
+                            <ul>
+                                <li><strong>Apache Ranger</strong> — централізоване управління політиками доступу для Hadoop-екосистеми (HDFS, Hive, HBase, Kafka).</li>
+                                <li><strong>Apache Knox</strong> — API-шлюз для безпечного доступу до кластера Hadoop.</li>
+                                <li><strong>AWS IAM / Azure RBAC / GCP IAM</strong> — нативний контроль доступу у хмарних середовищах.</li>
+                                <li><strong>HashiCorp Vault</strong> — управління секретами, динамічні credentials.</li>
+                            </ul>
+                            <p><strong>Якість даних:</strong></p>
+                            <ul>
+                                <li><strong>Great Expectations</strong> — Python-бібліотека для оголошення та перевірки очікувань (expectations) до даних.</li>
+                                <li><strong>dbt tests</strong> — вбудовані та кастомні тести якості у dbt-проектах.</li>
+                                <li><strong>Apache Griffin</strong> — платформа якості даних для Big Data.</li>
+                                <li><strong>Monte Carlo, Soda</strong> — комерційні інструменти моніторингу якості даних.</li>
+                            </ul>
+                            <p><strong>Каталогізація та lineage:</strong> Apache Atlas, DataHub, Alation, Collibra — для управління метаданими та відстеження походження даних.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <button class="faq-question">
+                        59. Які методи контролю якості даних ви застосовували у Data Warehouse?
+                        <span class="toggle-icon">+</span>
+                    </button>
+                    <div class="faq-answer">
+                        <div class="answer-content">
+                            <p>У Data Warehouse контроль якості даних реалізується на кількох рівнях:</p>
+                            <ul>
+                                <li><strong>Перевірки при завантаженні (load-time checks):</strong> NOT NULL, UNIQUE, CHECK constraints на рівні DDL таблиць; відхилення некоректних записів до error-таблиць.</li>
+                                <li><strong>Автоматизовані тести якості (dbt tests):</strong> <code>not_null</code>, <code>unique</code>, <code>accepted_values</code>, <code>relationships</code> — запускаються після кожного завантаження.</li>
+                                <li><strong>Reconciliation-запити:</strong> SQL-скрипти, що порівнюють count/sum між source та target після кожного ETL-циклу.</li>
+                                <li><strong>Моніторинг аномалій:</strong> відстеження відхилень від норми у ключових метриках (наприклад, раптове падіння кількості транзакцій на 50%).</li>
+                                <li><strong>SCD-перевірки:</strong> контроль коректності Slowly Changing Dimensions (відсутність дублікатів активних версій).</li>
+                            </ul>
+                            <p>Результати перевірок публікуються у дашбордах якості даних (data quality dashboards), і команда отримує сповіщення при виявленні проблем до того, як їх помітять кінцеві користувачі.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <button class="faq-question">
+                        60. Що таке стратегія доступу до даних (data access strategy) і чому вона важлива?
+                        <span class="toggle-icon">+</span>
+                    </button>
+                    <div class="faq-answer">
+                        <div class="answer-content">
+                            <p><strong>Стратегія доступу до даних (Data Access Strategy)</strong> — це системний підхід до визначення того, хто, як і за яких умов може отримувати доступ до даних організації.</p>
+                            <p>Ключові компоненти стратегії:</p>
+                            <ul>
+                                <li><strong>Класифікація даних:</strong> поділ даних на рівні чутливості (публічні, внутрішні, конфіденційні, секретні).</li>
+                                <li><strong>RBAC/ABAC:</strong> Role-Based або Attribute-Based Access Control — надання прав доступу на основі ролей або атрибутів користувача.</li>
+                                <li><strong>Row-level та Column-level security:</strong> обмеження доступу до окремих рядків або стовпців (наприклад, менеджер бачить лише свій регіон).</li>
+                                <li><strong>Data masking та tokenization:</strong> приховування чутливих полів для несанкціонованих користувачів.</li>
+                                <li><strong>Аудит доступу:</strong> логування всіх запитів до чутливих даних.</li>
+                            </ul>
+                            <p>Важливість стратегії полягає у: відповідності регуляторним вимогам (GDPR, HIPAA, SOC2), захисті від витоків даних, підтримці принципу найменших привілеїв (least privilege), а також у наданні самообслуговування аналітикам без ризику несанкціонованого доступу.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <button class="faq-question">
+                        61. Чи писали ви тести якості даних (Data Quality tests)? Які фреймворки використовували?
+                        <span class="toggle-icon">+</span>
+                    </button>
+                    <div class="faq-answer">
+                        <div class="answer-content">
+                            <p>Тести якості даних є критичним елементом будь-якого data-пайплайну. Основні фреймворки:</p>
+                            <ul>
+                                <li><strong>Great Expectations:</strong> найпопулярніша Python-бібліотека. Дозволяє оголошувати "expectations" (очікування) до датасету — наприклад, <code>expect_column_values_to_not_be_null</code>, <code>expect_column_values_to_be_between</code>. Генерує HTML-звіти (Data Docs). Інтегрується з Airflow, dbt, Spark.</li>
+                                <li><strong>dbt tests:</strong> вбудовані generic tests (<code>not_null</code>, <code>unique</code>, <code>accepted_values</code>, <code>relationships</code>) та custom singular tests у вигляді SQL-запитів. Запускаються командою <code>dbt test</code>.</li>
+                                <li><strong>Soda Core:</strong> відкрита бібліотека для перевірки якості даних через YAML-конфігурації. Підтримує SQL, Spark, BigQuery, Snowflake.</li>
+                                <li><strong>Pandera:</strong> для валідації Pandas та Spark DataFrame у Python-коді.</li>
+                            </ul>
+                            <p>Найкраща практика — запускати тести якості як окремий крок у пайплайні після завантаження, перед тим як дані стають доступними для звітності. При провалі тестів пайплайн зупиняється і надсилається сповіщення.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <button class="faq-question">
+                        62. Як налаштувати моніторинг якості даних та сповіщення (alerts)?
+                        <span class="toggle-icon">+</span>
+                    </button>
+                    <div class="faq-answer">
+                        <div class="answer-content">
+                            <p>Моніторинг якості даних будується на кількох рівнях:</p>
+                            <ul>
+                                <li><strong>Метрики свіжості (Freshness):</strong> відстеження часу останнього оновлення таблиць. Якщо таблиця не оновлювалася більше N годин — alert. В dbt це <code>freshness</code> конфігурація у sources.yml.</li>
+                                <li><strong>Метрики обсягу (Volume):</strong> моніторинг кількості рядків, завантажених за кожен запуск. Різке падіння або зростання — сигнал проблеми.</li>
+                                <li><strong>Метрики розподілу (Distribution):</strong> відстеження статистичних характеристик числових колонок (середнє, стандартне відхилення). Anomaly detection.</li>
+                                <li><strong>Тести схеми:</strong> автоматичне виявлення несподіваних змін схеми (нові/видалені колонки, зміна типів).</li>
+                            </ul>
+                            <p>Інструменти та алертинг: <strong>Monte Carlo</strong>, <strong>Soda</strong>, <strong>Bigeye</strong> — спеціалізовані платформи з ML-based anomaly detection. Для сповіщень — інтеграція з PagerDuty, Slack, email через webhook або API. У Airflow — callback-функції <code>on_failure_callback</code> для DAG та task-рівня.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <button class="faq-question">
+                        63. Як спроектувати стратегію індексування для таблиць з інтенсивними операціями читання/запису?
+                        <span class="toggle-icon">+</span>
+                    </button>
+                    <div class="faq-answer">
+                        <div class="answer-content">
+                            <p>Стратегія індексування залежить від балансу між читанням та записом:</p>
+                            <ul>
+                                <li><strong>Read-heavy таблиці:</strong> більше індексів виправдане. Використовувати composite indexes для часто виконуваних запитів з кількома умовами WHERE. Partial indexes для підмножин даних. Covering indexes (INCLUDE), щоб запит задовольнявся лише з індексу.</li>
+                                <li><strong>Write-heavy таблиці:</strong> мінімізувати кількість індексів, бо кожен INSERT/UPDATE/DELETE оновлює всі індекси. Розглянути часткові індекси лише для активних записів.</li>
+                                <li><strong>Вибір типу індексу:</strong> B-tree (за замовчуванням, для рівності та діапазонів), Hash (лише рівність), GIN (повнотекстовий пошук, JSONB, масиви), BRIN (для монотонно зростаючих колонок — дата, ID).</li>
+                            </ul>
+                            <p>У колонкових сховищах (BigQuery, Redshift, Snowflake) класичні індекси відсутні. Замість них: <strong>партиціонування</strong> по даті для обмеження обсягу сканування, <strong>кластеризація/сортування</strong> (CLUSTER KEY у Snowflake, SORT KEY у Redshift) для ефективного пошуку по часто вживаних колонках. Регулярний <code>ANALYZE</code> для актуальної статистики планувальника запитів.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <button class="faq-question">
+                        64. Які методи оптимізації SQL-запитів ви застосовуєте для великих наборів даних?
+                        <span class="toggle-icon">+</span>
+                    </button>
+                    <div class="faq-answer">
+                        <div class="answer-content">
+                            <p>Основні методи оптимізації SQL для великих наборів даних:</p>
+                            <ul>
+                                <li><strong>EXPLAIN / EXPLAIN ANALYZE:</strong> перший крок — аналіз плану виконання запиту для виявлення вузьких місць (Sequential Scan замість Index Scan, Nested Loop замість Hash Join).</li>
+                                <li><strong>Предикати та фільтрація:</strong> завжди фільтрувати якомога раніше (pushdown predicates). Уникати функцій у WHERE на індексованих колонках (<code>WHERE YEAR(date) = 2023</code> не використає індекс; краще <code>WHERE date BETWEEN '2023-01-01' AND '2023-12-31'</code>).</li>
+                                <li><strong>JOIN оптимізація:</strong> починати з найменших таблиць, використовувати правильний тип JOIN, уникати декартового добутку. У Spark — broadcast join для малих таблиць.</li>
+                                <li><strong>Партиційне відсікання (Partition Pruning):</strong> запити мають включати умови по партиційній колонці, щоб читалися лише потрібні партиції.</li>
+                                <li><strong>Агрегація та CTE:</strong> матеріалізовані CTE замість повторних підзапитів; pre-aggregation для часто вживаних агрегатів.</li>
+                                <li><strong>Columnar storage benefits:</strong> вибирати лише потрібні колонки (не <code>SELECT *</code>).</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <button class="faq-question">
+                        65. Що таке MapReduce і як він працює?
+                        <span class="toggle-icon">+</span>
+                    </button>
+                    <div class="faq-answer">
+                        <div class="answer-content">
+                            <p><strong>MapReduce</strong> — це програмна модель та фреймворк для паралельної обробки великих наборів даних на кластері звичайних машин, розроблений Google і реалізований у Apache Hadoop.</p>
+                            <p>Модель складається з двох основних фаз:</p>
+                            <ul>
+                                <li><strong>Map:</strong> вхідні дані розбиваються на частини (splits), кожна обробляється окремим Map-завданням. Map-функція приймає пару (key, value) і виробляє набір проміжних пар (key, value). Наприклад, для підрахунку слів: для кожного слова у рядку → виводить (слово, 1).</li>
+                                <li><strong>Shuffle &amp; Sort:</strong> фреймворк автоматично збирає всі проміжні значення з однаковим ключем разом і сортує їх.</li>
+                                <li><strong>Reduce:</strong> Reduce-функція отримує ключ та список усіх значень для нього, виконує фінальну агрегацію (наприклад, сумує всі 1 для кожного слова → (слово, count)).</li>
+                            </ul>
+                            <p>Обмеження MapReduce: великі затримки через запис проміжних результатів на диск, складне налагодження, непридатність для ітеративних алгоритмів (ML). Саме тому Apache Spark, який зберігає дані в пам'яті, значно перевершує MapReduce за продуктивністю.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <button class="faq-question">
+                        66. Як працює Apache Spark і коли він кращий за Hadoop для обробки даних?
+                        <span class="toggle-icon">+</span>
+                    </button>
+                    <div class="faq-answer">
+                        <div class="answer-content">
+                            <p><strong>Apache Spark</strong> — це розподілений рушій обробки даних в пам'яті (in-memory). Ключові компоненти: Driver Program (координатор), Cluster Manager (YARN/Kubernetes/Standalone), Executors (JVM-процеси на worker-вузлах).</p>
+                            <p>Spark будує <strong>DAG (Directed Acyclic Graph)</strong> трансформацій, оптимізує план виконання через Catalyst Optimizer (для SQL/DataFrame API) та виконує обчислення з мінімальними записами на диск — дані між стадіями зберігаються в RAM.</p>
+                            <p>Spark кращий за Hadoop MapReduce у таких випадках:</p>
+                            <ul>
+                                <li><strong>Ітеративні алгоритми</strong> (ML, граф-обробка) — Spark кешує дані в пам'яті між ітераціями, MapReduce записує на диск кожного разу.</li>
+                                <li><strong>Інтерактивний аналіз</strong> — Spark Shell / Jupyter дозволяють виконувати запити інтерактивно.</li>
+                                <li><strong>Потокова обробка</strong> — Spark Structured Streaming для near-real-time.</li>
+                                <li><strong>Швидкість</strong> — Spark у 10-100x швидший за MapReduce для більшості завдань.</li>
+                            </ul>
+                            <p>MapReduce може бути кращим лише для простих пакетних ETL завдань при обмеженій оперативній пам'яті.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <button class="faq-question">
+                        67. Що таке Spark Structured Streaming? Джерела та приймачі даних? Мікро-пакетна vs безперервна обробка?
+                        <span class="toggle-icon">+</span>
+                    </button>
+                    <div class="faq-answer">
+                        <div class="answer-content">
+                            <p><strong>Spark Structured Streaming</strong> — це масштабований, відмовостійкий рушій потокової обробки побудований поверх Spark SQL. Потік даних трактується як нескінченна таблиця, до якої постійно додаються нові рядки, що дозволяє використовувати звичайний DataFrame/SQL API.</p>
+                            <p><strong>Джерела (Sources):</strong> Kafka, file source (S3/HDFS — нові файли), Delta Lake, socket (для тестування).</p>
+                            <p><strong>Приймачі (Sinks):</strong> Kafka, Delta Lake, Parquet/ORC файли, JDBC (бази даних), console (для тестування), foreachBatch (кастомна логіка).</p>
+                            <p><strong>Режими обробки:</strong></p>
+                            <ul>
+                                <li><strong>Мікро-пакетна (Micro-batch):</strong> за замовчуванням. Дані накопичуються протягом тригерного інтервалу (наприклад, 10 секунд), потім обробляються як мікро-батч. Латентність від секунд. Простіше забезпечити exactly-once semantics.</li>
+                                <li><strong>Безперервна (Continuous Processing):</strong> експериментальний режим з латентністю ~1мс. Обробка кожного запису негайно. Підтримує лише at-least-once semantics та обмежений набір операцій.</li>
+                            </ul>
+                            <p>Checkpoint та WAL (Write-Ahead Log) забезпечують відмовостійкість та відновлення стану при перезапуску.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <button class="faq-question">
+                        68. Опишіть підходи до налагодження Spark-застосунків та основні методи.
+                        <span class="toggle-icon">+</span>
+                    </button>
+                    <div class="faq-answer">
+                        <div class="answer-content">
+                            <p>Налагодження Spark-застосунків охоплює кілька аспектів:</p>
+                            <ul>
+                                <li><strong>Spark UI:</strong> головний інструмент. Вкладки Jobs, Stages, Tasks дозволяють виявити повільні стадії, data skew (нерівномірний розподіл даних), проблеми зі spill (запис на диск через нестачу RAM).</li>
+                                <li><strong>Data Skew:</strong> якщо одна задача (task) обробляє значно більше даних за інші — skew. Рішення: salting key (додавання випадкового суфіксу до ключа для рівномірного розподілу), AQE (Adaptive Query Execution) у Spark 3.x.</li>
+                                <li><strong>OOM (Out of Memory):</strong> збільшити <code>spark.executor.memory</code>, зменшити кількість партицій або використати <code>persist(StorageLevel.DISK_ONLY)</code>.</li>
+                                <li><strong>Shuffle optimization:</strong> мінімізувати shuffle через правильний partitioning, використання <code>reduceByKey</code> замість <code>groupByKey</code>.</li>
+                                <li><strong>Кешування:</strong> <code>cache()</code> або <code>persist()</code> для датасетів, що використовуються багаторазово. Не кешувати все підряд — це споживає пам'ять.</li>
+                                <li><strong>Логи та метрики:</strong> <code>log4j</code> логи executor'ів, метрики через Spark History Server або зовнішні системи (Prometheus + Grafana).</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <button class="faq-question">
+                        69. Що таке Broadcast join у Spark і коли він корисний?
+                        <span class="toggle-icon">+</span>
+                    </button>
+                    <div class="faq-answer">
+                        <div class="answer-content">
+                            <p><strong>Broadcast join</strong> — це оптимізація JOIN у Spark, при якій мала таблиця (або DataFrame) повністю копіюється (broadcast) на кожен executor у кластері, замість того щоб виконувати дорогий shuffle обох таблиць.</p>
+                            <p>Як це працює: мала таблиця відправляється Driver'ом на всі executor'и та зберігається в пам'яті. Велика таблиця залишається розподіленою. JOIN виконується локально на кожному executor'і без мережевого обміну даними між вузлами.</p>
+                            <p>Коли використовувати:</p>
+                            <ul>
+                                <li>Одна з таблиць значно менша за іншу (типово менше 10 МБ, налаштовується через <code>spark.sql.autoBroadcastJoinThreshold</code>).</li>
+                                <li>Довідникові таблиці (countries, categories, currencies), які joinяться з великими fact-таблицями.</li>
+                            </ul>
+                            <p>Явне використання: <code>df.join(broadcast(small_df), "key")</code> або <code>/*+ BROADCAST(small_table) */</code> hint у SQL. При AQE (Adaptive Query Execution) Spark може автоматично конвертувати sort-merge join у broadcast join, якщо одна зі сторін виявляється достатньо малою після filtering.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <button class="faq-question">
+                        70. Опишіть архітектуру Spark та основні компоненти.
+                        <span class="toggle-icon">+</span>
+                    </button>
+                    <div class="faq-answer">
+                        <div class="answer-content">
+                            <p>Архітектура Apache Spark побудована за принципом master-worker:</p>
+                            <ul>
+                                <li><strong>Driver Program:</strong> головний процес, який містить <code>SparkContext</code>. Аналізує код користувача, будує DAG трансформацій, розбиває його на stages та tasks, відстежує виконання.</li>
+                                <li><strong>Cluster Manager:</strong> управляє ресурсами кластера. Варіанти: YARN (Hadoop), Kubernetes, Apache Mesos, Spark Standalone.</li>
+                                <li><strong>Executor:</strong> JVM-процес на worker-вузлі. Виконує tasks, зберігає кешовані дані (RDD/DataFrame). Кожен executor має N ядер та M GB RAM.</li>
+                                <li><strong>Task:</strong> найменша одиниця роботи. Обробляє одну партицію даних.</li>
+                            </ul>
+                            <p><strong>Ключові абстракції:</strong></p>
+                            <ul>
+                                <li><strong>RDD (Resilient Distributed Dataset):</strong> базова незмінна розподілена колекція. Низькорівневий API.</li>
+                                <li><strong>DataFrame / Dataset:</strong> структуровані дані зі схемою. Оптимізуються через Catalyst Optimizer. Рекомендований API.</li>
+                                <li><strong>SparkSession:</strong> єдина точка входу для всіх Spark API (замінює SparkContext, SQLContext, HiveContext).</li>
+                            </ul>
+                            <p><strong>Модулі:</strong> Spark SQL, Spark Streaming (Structured Streaming), MLlib, GraphX.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <button class="faq-question">
+                        71. Чи працювали ви з Delta Lake та Delta Engine? Концепція Lakehouse? Які операції підтримуються?
+                        <span class="toggle-icon">+</span>
+                    </button>
+                    <div class="faq-answer">
+                        <div class="answer-content">
+                            <p><strong>Delta Lake</strong> — відкритий формат зберігання даних поверх Parquet з підтримкою ACID-транзакцій для Data Lake. Додає transaction log (<code>_delta_log</code>) до звичайних Parquet файлів.</p>
+                            <p><strong>Концепція Lakehouse</strong> поєднує переваги Data Lake (низька вартість зберігання, підтримка неструктурованих даних) та Data Warehouse (ACID, схема, продуктивність запитів). Замість двох окремих систем — єдина платформа.</p>
+                            <p><strong>Операції, що підтримує Delta Lake:</strong></p>
+                            <ul>
+                                <li><strong>ACID транзакції:</strong> атомарні записи, читання консистентного snapshot.</li>
+                                <li><strong>MERGE (UPSERT):</strong> оновлення або вставка залежно від умови — ключова операція для CDC.</li>
+                                <li><strong>DELETE та UPDATE:</strong> точкове видалення/оновлення рядків (неможливе у чистому Parquet).</li>
+                                <li><strong>Time Travel:</strong> читання попередньої версії таблиці (<code>VERSION AS OF 5</code> або <code>TIMESTAMP AS OF '2024-01-01'</code>).</li>
+                                <li><strong>Schema Evolution:</strong> автоматичне додавання нових колонок при записі.</li>
+                                <li><strong>OPTIMIZE + ZORDER:</strong> компактизація дрібних файлів та кластеризація даних для прискорення запитів.</li>
+                                <li><strong>VACUUM:</strong> видалення застарілих файлів для звільнення місця.</li>
+                            </ul>
+                            <p><strong>Delta Engine</strong> — оптимізований рушій запитів (vectorized reader, AQE) у Databricks для максимальної продуктивності на Delta таблицях.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <button class="faq-question">
+                        72. Чи працювали ви з пакетною (batch) та потоковою (streaming) обробкою даних? Характеристики кожного підходу.
+                        <span class="toggle-icon">+</span>
+                    </button>
+                    <div class="faq-answer">
+                        <div class="answer-content">
+                            <p><strong>Пакетна обробка (Batch Processing):</strong></p>
+                            <ul>
+                                <li>Обробка накопиченого обсягу даних за фіксовані інтервали (година, ніч, тиждень).</li>
+                                <li>Висока пропускна здатність (throughput), прийнятна латентність.</li>
+                                <li>Простіша реалізація, легше забезпечити exactly-once semantics.</li>
+                                <li>Інструменти: Apache Spark (batch mode), Hadoop MapReduce, dbt, SQL ETL.</li>
+                                <li>Use cases: нічний ETL до DWH, формування звітів, ML training.</li>
+                            </ul>
+                            <p><strong>Потокова обробка (Streaming Processing):</strong></p>
+                            <ul>
+                                <li>Безперервна обробка даних у міру їх надходження, мінімальна латентність (мілісекунди — секунди).</li>
+                                <li>Складніша реалізація: управління станом (stateful), windowing, обробка запізнілих даних (late data), watermarks.</li>
+                                <li>Інструменти: Apache Kafka Streams, Apache Flink, Spark Structured Streaming.</li>
+                                <li>Use cases: fraud detection, real-time дашборди, IoT-моніторинг, рекомендації в реальному часі.</li>
+                            </ul>
+                            <p>Архітектура Lambda поєднує обидва підходи: batch-шар для точних результатів та speed-шар для near-real-time. Архітектура Kappa спрощує це, використовуючи лише стрімінг для всього.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <button class="faq-question">
+                        73. Як ви працюєте з обробкою даних у реальному часі за допомогою Kafka, Flink або подібних інструментів? Які труднощі виникають?
+                        <span class="toggle-icon">+</span>
+                    </button>
+                    <div class="faq-answer">
+                        <div class="answer-content">
+                            <p>Типова архітектура real-time обробки: продюсери публікують події до Kafka → Flink або Spark Structured Streaming зчитують, обробляють → результати зберігаються до Delta Lake, PostgreSQL або відправляються назад до Kafka.</p>
+                            <p><strong>Apache Flink</strong> особливо сильний для stateful streaming: підтримує event time processing (обробка за часом події, а не часом надходження), точні watermarks для обробки запізнілих даних, RocksDB для зберігання великого стану.</p>
+                            <p><strong>Типові труднощі:</strong></p>
+                            <ul>
+                                <li><strong>Late data:</strong> події можуть надходити із затримкою. Watermarks визначають, скільки чекати. Після watermark пізні події відкидаються або обробляються окремо.</li>
+                                <li><strong>Exactly-once semantics:</strong> складно гарантувати end-to-end. Kafka transactional producer + idempotent consumer + transactional sink.</li>
+                                <li><strong>Backpressure:</strong> якщо consumer не встигає за producer'ом — система перевантажується. Потрібен моніторинг consumer lag у Kafka.</li>
+                                <li><strong>State management:</strong> великий стан (state) потребує оптимізації — checkpointing до S3, правильне налаштування TTL для state.</li>
+                                <li><strong>Schema evolution:</strong> зміна схеми повідомлень у Kafka без зупинки consumer'ів. Schema Registry допомагає.</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <button class="faq-question">
+                        74. Як досягається відмовостійкість у HDFS? Ролі NameNode та DataNode?
+                        <span class="toggle-icon">+</span>
+                    </button>
+                    <div class="faq-answer">
+                        <div class="answer-content">
+                            <p><strong>HDFS (Hadoop Distributed File System)</strong> досягає відмовостійкості через реплікацію блоків даних. За замовчуванням, кожен блок зберігається у 3 копіях на різних DataNode'ах (Replication Factor = 3).</p>
+                            <p><strong>NameNode</strong> — "мозок" HDFS:</p>
+                            <ul>
+                                <li>Зберігає метадані файлової системи: namespace (дерево директорій/файлів), маппінг файлів на блоки та блоків на DataNode'и.</li>
+                                <li>Метадані зберігаються в пам'яті для швидкого доступу та на диску (FsImage + EditLog).</li>
+                                <li>Є єдиною точкою відмови (SPOF) — вирішується через High Availability: Active/Standby NameNode з JournalNode кворумом для синхронізації EditLog.</li>
+                            </ul>
+                            <p><strong>DataNode</strong> — "робочі руки" HDFS:</p>
+                            <ul>
+                                <li>Зберігають фактичні блоки даних на локальних дисках.</li>
+                                <li>Регулярно надсилають heartbeat та block report до NameNode.</li>
+                                <li>Якщо NameNode не отримав heartbeat протягом 10 хвилин — DataNode вважається мертвим, NameNode ініціює ре-реплікацію його блоків на інші вузли.</li>
+                            </ul>
+                            <p>Клієнти читають дані безпосередньо з DataNode'ів (не через NameNode), що дозволяє масштабувати читання горизонтально.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <button class="faq-question">
+                        75. Який стандартний розмір блоку HDFS? Переваги та недоліки великого та малого розміру блоку?
+                        <span class="toggle-icon">+</span>
+                    </button>
+                    <div class="faq-answer">
+                        <div class="answer-content">
+                            <p>Стандартний розмір блоку HDFS — <strong>128 МБ</strong> (у Hadoop 2.x і новіших; у Hadoop 1.x було 64 МБ). Розмір можна налаштувати для конкретних файлів або директорій.</p>
+                            <p><strong>Переваги великого розміру блоку:</strong></p>
+                            <ul>
+                                <li>Менше метаданих у NameNode (менше блоків для великих файлів).</li>
+                                <li>Зменшення overhead мережевих з'єднань — клієнт рідше встановлює нові з'єднання для читання.</li>
+                                <li>Краща пропускна здатність для послідовного читання великих файлів.</li>
+                            </ul>
+                            <p><strong>Недоліки великого блоку:</strong></p>
+                            <ul>
+                                <li>Неефективне зберігання малих файлів — файл у 1 КБ все одно займає цілий блок.</li>
+                                <li>Знижений паралелізм для MapReduce — менше map-задач на великий файл.</li>
+                            </ul>
+                            <p><strong>Проблема малих файлів (Small Files Problem):</strong> тисячі дрібних файлів перевантажують NameNode (кожен файл — кілька об'єктів в пам'яті) та знижують продуктивність Spark/MapReduce. Рішення: HAR-архіви, Parquet компактизація, <code>OPTIMIZE</code> у Delta Lake, CombineFileInputFormat.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <button class="faq-question">
+                        76. Як організувати масштабування обробки даних у розподілених системах? Які фактори враховувати при додаванні вузлів?
+                        <span class="toggle-icon">+</span>
+                    </button>
+                    <div class="faq-answer">
+                        <div class="answer-content">
+                            <p>Масштабування розподілених систем обробки даних відбувається горизонтально (додавання вузлів). Ключові аспекти:</p>
+                            <ul>
+                                <li><strong>Data partitioning:</strong> дані мають бути рівномірно розподілені між вузлами. Нерівномірний розподіл (data skew) призводить до того, що одні вузли перевантажені, інші простоюють.</li>
+                                <li><strong>Network bandwidth:</strong> при shuffle-операціях вузли активно обмінюються даними. Пропускна здатність мережі може стати вузьким місцем.</li>
+                                <li><strong>Storage scalability:</strong> HDFS масштабується лінійно — кожен новий DataNode додає дискове місце та пропускну здатність.</li>
+                                <li><strong>Compute vs Storage:</strong> у хмарних системах обчислення та зберігання розділені (S3 + EMR/Dataproc) — можна масштабувати незалежно.</li>
+                            </ul>
+                            <p>Фактори при додаванні вузлів:</p>
+                            <ul>
+                                <li>Правильна конфігурація executor memory та cores на нових вузлах.</li>
+                                <li>Ребалансування даних (наприклад, HDFS rebalancer після додавання DataNode).</li>
+                                <li>Оновлення конфігурації cluster manager (YARN/Kubernetes) для врахування нових ресурсів.</li>
+                                <li>Monitoring: перевірити, чи завантаження справді розподілилось на нові вузли.</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <button class="faq-question">
+                        77. Що таке оркестрація даних (data orchestration)? Які оркестратори ви знаєте та використовували?
+                        <span class="toggle-icon">+</span>
+                    </button>
+                    <div class="faq-answer">
+                        <div class="answer-content">
+                            <p><strong>Оркестрація даних (Data Orchestration)</strong> — це автоматизоване управління та координація послідовності завдань (задач) у data pipeline: визначення порядку виконання, управління залежностями між задачами, планування запусків, обробка помилок та перезапусків.</p>
+                            <p>Оркестратор відповідає на питання "коли і в якому порядку запускати задачі", а не "як обробляти дані" — це різниця між orchestration та execution.</p>
+                            <p><strong>Популярні оркестратори:</strong></p>
+                            <ul>
+                                <li><strong>Apache Airflow:</strong> найпоширеніший у Big Data. Python-based DAG, великий набір операторів та хуків. Deployment: VM, Kubernetes, MWAA (AWS), Cloud Composer (GCP).</li>
+                                <li><strong>Prefect:</strong> сучасна альтернатива Airflow з кращим UX, нативна підтримка Python, динамічні flows.</li>
+                                <li><strong>Dagster:</strong> зосереджений на data assets та observability. Software-defined assets.</li>
+                                <li><strong>Luigi (Spotify):</strong> простий оркестратор для менших проектів.</li>
+                                <li><strong>AWS Step Functions, Azure Logic Apps:</strong> хмарні serverless оркестратори.</li>
+                                <li><strong>dbt Cloud:</strong> оркестрація dbt-проектів.</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <button class="faq-question">
+                        78. Чи є у вас досвід з Apache Airflow? Найкращі практики?
+                        <span class="toggle-icon">+</span>
+                    </button>
+                    <div class="faq-answer">
+                        <div class="answer-content">
+                            <p><strong>Apache Airflow</strong> — платформа оркестрації пайплайнів на основі DAG (Directed Acyclic Graph), написаних на Python. Компоненти: Webserver (UI), Scheduler, Executor (Local, Celery, Kubernetes), Metadata Database (PostgreSQL).</p>
+                            <p><strong>Найкращі практики:</strong></p>
+                            <ul>
+                                <li><strong>Ідемпотентність:</strong> кожен task повинен давати однаковий результат незалежно від кількості запусків. Використовувати <code>execution_date</code> як ключ партиції.</li>
+                                <li><strong>Atomicity:</strong> task або виконується повністю, або не виконується. Уникати часткових записів.</li>
+                                <li><strong>Не використовувати Airflow як execution engine:</strong> Airflow оркеструє, а не обробляє дані. Задачі мають запускати зовнішні системи (Spark, dbt, SQL).</li>
+                                <li><strong>Малі DAG-и:</strong> великі DAG зі сотнями tasks важко підтримувати. Розбивати на менші.</li>
+                                <li><strong>Версіонування DAG у Git:</strong> CI/CD для деплою DAG-файлів.</li>
+                                <li><strong>Secrets у Connections/Variables або Secret Backend:</strong> ніколи у коді.</li>
+                                <li><strong>SLA та алерти:</strong> налаштувати <code>sla</code> та <code>on_failure_callback</code> для сповіщень.</li>
+                                <li><strong>KubernetesExecutor:</strong> для ізоляції та масштабування задач у продакшені.</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <button class="faq-question">
+                        79. Що таке Operators та Hooks в Airflow? Чи писали ви власні?
+                        <span class="toggle-icon">+</span>
+                    </button>
+                    <div class="faq-answer">
+                        <div class="answer-content">
+                            <p><strong>Operator</strong> в Airflow — це шаблон задачі, що визначає одиницю роботи. Кожен task у DAG є екземпляром певного оператора.</p>
+                            <ul>
+                                <li><strong>Action Operators:</strong> виконують дію (PythonOperator, BashOperator, SparkSubmitOperator, BigQueryOperator).</li>
+                                <li><strong>Transfer Operators:</strong> переміщують дані між системами (S3ToRedshiftOperator).</li>
+                                <li><strong>Sensor Operators:</strong> чекають настання умови (FileSensor, HttpSensor, ExternalTaskSensor).</li>
+                            </ul>
+                            <p><strong>Hook</strong> — це інтерфейс для взаємодії із зовнішньою системою. Hook управляє підключенням (бере credentials з Airflow Connection), надає методи для роботи з системою. Operators використовують Hooks всередині. Наприклад, <code>PostgresHook</code> надає методи <code>get_conn()</code>, <code>run()</code>, <code>get_records()</code>.</p>
+                            <p><strong>Написання власних:</strong> кастомний Operator успадковує від <code>BaseOperator</code> та реалізує метод <code>execute(self, context)</code>. Кастомний Hook успадковує від <code>BaseHook</code> та реалізує <code>get_conn()</code>. Розміщуються у <code>plugins/</code> директорії або як Python-пакет. Типові випадки: нестандартна взаємодія з API, специфічна логіка трансформації або перевірки.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <button class="faq-question">
+                        80. Чи варто використовувати Apache Airflow як середовище обробки (не лише оркестрації)? Обґрунтуйте.
+                        <span class="toggle-icon">+</span>
+                    </button>
+                    <div class="faq-answer">
+                        <div class="answer-content">
+                            <p><strong>Ні, не варто.</strong> Apache Airflow спроектований виключно як оркестратор, а не як платформа обробки даних. Використання Airflow для виконання важких обчислень безпосередньо в задачах (PythonOperator з pandas обробкою мільйонів рядків) має серйозні недоліки:</p>
+                            <ul>
+                                <li><strong>Масштабованість:</strong> Airflow worker'и не призначені для обробки великих обсягів даних. Вони не мають механізмів розподіленої обробки.</li>
+                                <li><strong>Пам'ять:</strong> завантаження великих датасетів у пам'ять worker'а може призвести до OOM та нестабільності всієї системи оркестрації.</li>
+                                <li><strong>Відмовостійкість:</strong> немає механізмів часткового відновлення обробки — при збої весь task перезапускається з початку.</li>
+                                <li><strong>Продуктивність:</strong> pandas/numpy на одному worker'і несумісні з обсягами Big Data.</li>
+                            </ul>
+                            <p><strong>Правильний підхід:</strong> Airflow оркеструє — запускає Spark jobs, dbt runs, SQL запити в DWH, виклики cloud dataflow. Сама обробка даних виконується у спеціалізованих системах (Spark, BigQuery, Snowflake). Airflow лише відстежує успішність та порядок виконання цих зовнішніх завдань.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <button class="faq-question">
+                        81. Розумієте різницю між статичною та динамічною типізацією? Переваги/недоліки? Яку використовує Python?
+                        <span class="toggle-icon">+</span>
+                    </button>
+                    <div class="faq-answer">
+                        <div class="answer-content">
+                            <p><strong>Статична типізація:</strong> типи змінних перевіряються під час компіляції. Помилки типів виявляються до запуску програми. Приклади: Java, C++, Go, Rust.</p>
+                            <ul>
+                                <li><em>Переваги:</em> раннє виявлення помилок, краща підтримка IDE, документованість коду через типи, продуктивність (оптимізації компілятора).</li>
+                                <li><em>Недоліки:</em> більше boilerplate-коду, менша гнучкість, повільніший старт розробки.</li>
+                            </ul>
+                            <p><strong>Динамічна типізація:</strong> типи перевіряються під час виконання (runtime). Одна змінна може змінювати тип. Приклади: Python, JavaScript, Ruby.</p>
+                            <ul>
+                                <li><em>Переваги:</em> швидкий старт, менше коду, гнучкість, зручно для скриптів та прототипів.</li>
+                                <li><em>Недоліки:</em> помилки типів виявляються лише в runtime, складніше рефакторити великий код, менша продуктивність.</li>
+                            </ul>
+                            <p><strong>Python використовує динамічну типізацію.</strong> Однак з Python 3.5+ з'явилися анотації типів (type hints), а інструменти статичного аналізу (mypy, pyright) дозволяють виконувати статичну перевірку типів без зміни поведінки інтерпретатора — це "gradually typed" підхід.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <button class="faq-question">
+                        82. Що таке сувора та слабка типізація (strict vs weak typing)? Яку реалізує Python?
+                        <span class="toggle-icon">+</span>
+                    </button>
+                    <div class="faq-answer">
+                        <div class="answer-content">
+                            <p><strong>Слабка типізація (Weak Typing):</strong> мова автоматично конвертує типи при виконанні операцій між різними типами (неявне приведення). Наприклад, у JavaScript: <code>"5" + 3</code> дає <code>"53"</code> (рядок). PHP виконує <code>"5" * 3 = 15</code>.</p>
+                            <p><strong>Сувора типізація (Strong/Strict Typing):</strong> мова не виконує неявних перетворень типів. Спроба виконати операцію між несумісними типами призводить до помилки.</p>
+                            <p><strong>Python реалізує сувору типізацію (strong typing).</strong> Попри те, що Python динамічно типізований, він не виконує неявних перетворень:</p>
+                            <ul>
+                                <li><code>"5" + 3</code> у Python → <code>TypeError: can only concatenate str (not "int") to str</code></li>
+                                <li><code>5 + 3.0</code> → <code>8.0</code> (це явне перетворення int→float, яке мова визначає як коректне)</li>
+                            </ul>
+                            <p>Таким чином, Python є <strong>динамічно та суворо типізованою</strong> мовою — тип визначається в runtime, але неявних "магічних" перетворень між несумісними типами немає.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <button class="faq-question">
+                        83. Що таке анотації типів у Python? Чи прийме foo(x: str) рядкові значення? Переваги?
+                        <span class="toggle-icon">+</span>
+                    </button>
+                    <div class="faq-answer">
+                        <div class="answer-content">
+                            <p><strong>Анотації типів (Type Hints)</strong> — це синтаксичні підказки у Python-коді, що вказують очікуваний тип змінних, аргументів функцій та повернених значень. Введені в PEP 484 (Python 3.5).</p>
+                            <p>Приклад: <code>def greet(name: str) -&gt; str: return f"Hello, {name}"</code></p>
+                            <p><strong>Чи прийме <code>foo(x: str)</code> нерядкові значення?</strong> Так, прийме. Анотації типів у Python є суто інформаційними — інтерпретатор їх повністю ігнорує під час виконання. Виклик <code>foo(42)</code> не викличе жодної помилки від самого Python. Перевірку виконують лише зовнішні статичні аналізатори (mypy, pyright, pylance) або runtime-валідатори (pydantic).</p>
+                            <p><strong>Переваги анотацій типів:</strong></p>
+                            <ul>
+                                <li>Краща документація коду — одразу зрозуміло, які типи очікує функція.</li>
+                                <li>Підтримка IDE — автодоповнення, підсвічування помилок у редакторі (VSCode, PyCharm).</li>
+                                <li>Статичний аналіз — mypy може знайти помилки типів без запуску програми.</li>
+                                <li>Рефакторинг — простіше безпечно змінювати сигнатури функцій.</li>
+                                <li>Runtime валідація через pydantic/dataclasses з type enforcement.</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <button class="faq-question">
+                        84. У чому різниця між Tuple та NamedTuple у Python?
+                        <span class="toggle-icon">+</span>
+                    </button>
+                    <div class="faq-answer">
+                        <div class="answer-content">
+                            <p><strong>Tuple</strong> — незмінна (immutable) послідовність елементів. Доступ до елементів за числовим індексом: <code>point = (10, 20); x = point[0]</code>. Код важко читати — незрозуміло, що означає <code>point[0]</code>.</p>
+                            <p><strong>NamedTuple</strong> — розширення tuple з іменованими полями. Елементи доступні як за іменем, так і за індексом:</p>
+                            <ul>
+                                <li>Стара форма: <code>from collections import namedtuple; Point = namedtuple('Point', ['x', 'y']); p = Point(10, 20); p.x</code></li>
+                                <li>Сучасна форма (Python 3.6+): <code>from typing import NamedTuple; class Point(NamedTuple): x: int; y: int</code></li>
+                            </ul>
+                            <p><strong>Порівняння:</strong></p>
+                            <ul>
+                                <li><strong>Читабельність:</strong> NamedTuple значно кращий — <code>employee.salary</code> зрозуміліше за <code>employee[2]</code>.</li>
+                                <li><strong>Пам'ять:</strong> NamedTuple ефективніший за dict, аналогічний звичайному tuple.</li>
+                                <li><strong>Незмінність:</strong> обидва immutable.</li>
+                                <li><strong>Сумісність:</strong> NamedTuple є tuple — можна розпаковувати, порівнювати, передавати де очікується tuple.</li>
+                                <li><strong>NamedTuple vs dataclass:</strong> dataclass змінювані за замовчуванням, підтримують методи, але займають більше пам'яті.</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <button class="faq-question">
+                        85. Чи використовували ви контекстні менеджери (context managers) у Python? Як вони працюють? Чи можна написати власні?
+                        <span class="toggle-icon">+</span>
+                    </button>
+                    <div class="faq-answer">
+                        <div class="answer-content">
+                            <p><strong>Контекстний менеджер</strong> — об'єкт, що визначає контекст виконання блоку коду за допомогою оператора <code>with</code>. Гарантує виконання коду очищення (cleanup) навіть при виникненні виключення.</p>
+                            <p>Найпоширеніший приклад: <code>with open('file.txt') as f: data = f.read()</code> — файл буде закрито автоматично, навіть якщо виникне помилка.</p>
+                            <p><strong>Як це працює:</strong> контекстний менеджер реалізує два методи протоколу:</p>
+                            <ul>
+                                <li><code>__enter__(self)</code> — викликається при вході в блок <code>with</code>, повертає об'єкт для <code>as</code>.</li>
+                                <li><code>__exit__(self, exc_type, exc_val, exc_tb)</code> — викликається при виході з блоку (нормальному або через виключення). Якщо повертає True — виключення придушується.</li>
+                            </ul>
+                            <p><strong>Написання власного контекстного менеджера:</strong></p>
+                            <ul>
+                                <li>Через клас з <code>__enter__</code> та <code>__exit__</code>.</li>
+                                <li>Через генератор з декоратором <code>@contextmanager</code> з модуля <code>contextlib</code>: код до <code>yield</code> — це <code>__enter__</code>, код після <code>yield</code> у <code>finally</code> — це <code>__exit__</code>.</li>
+                            </ul>
+                            <p>Типові use cases: управління з'єднаннями з БД, транзакції, блокування (threading.Lock), тимчасові директорії, перехоплення логів у тестах.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <button class="faq-question">
+                        86. Для чого потрібен модуль collections у Python? Які об'єкти ви використовували?
+                        <span class="toggle-icon">+</span>
+                    </button>
+                    <div class="faq-answer">
+                        <div class="answer-content">
+                            <p>Модуль <strong>collections</strong> надає спеціалізовані контейнерні типи даних як альтернативу вбудованим dict, list, set, tuple. Кожен тип вирішує конкретну задачу ефективніше.</p>
+                            <ul>
+                                <li><strong>Counter:</strong> підрахунок кількості входжень елементів. <code>Counter(['a','b','a']) → {'a':2,'b':1}</code>. Методи: <code>most_common(n)</code>, арифметичні операції між Counter.</li>
+                                <li><strong>defaultdict:</strong> dict, що автоматично створює значення за замовчуванням для відсутніх ключів. <code>defaultdict(list)</code> — при зверненні до нового ключа автоматично створює порожній список.</li>
+                                <li><strong>OrderedDict:</strong> dict, що пам'ятає порядок вставки (актуально до Python 3.7; з 3.7+ звичайний dict також зберігає порядок). Корисний для LRU-кешу реалізації.</li>
+                                <li><strong>deque (double-ended queue):</strong> черга з двома кінцями. O(1) для append/appendleft/pop/popleft. Ідеальна для FIFO/LIFO структур та sliding window алгоритмів.</li>
+                                <li><strong>namedtuple:</strong> tuple з іменованими полями (розглянуто вище).</li>
+                                <li><strong>ChainMap:</strong> об'єднання кількох словників у єдиний вигляд без копіювання.</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <button class="faq-question">
+                        87. Які патерни проєктування (design patterns) ви знаєте? Які застосовували?
+                        <span class="toggle-icon">+</span>
+                    </button>
+                    <div class="faq-answer">
+                        <div class="answer-content">
+                            <p>Патерни проєктування поділяються на три категорії (GoF):</p>
+                            <p><strong>Породжуючі (Creational):</strong></p>
+                            <ul>
+                                <li><strong>Singleton:</strong> один єдиний екземпляр класу. Використання: конфігурація, connection pool, логер.</li>
+                                <li><strong>Factory Method / Abstract Factory:</strong> делегування створення об'єктів підкласам або окремій фабриці. У Spark: SparkSession.builder.</li>
+                                <li><strong>Builder:</strong> покрокове створення складних об'єктів.</li>
+                            </ul>
+                            <p><strong>Структурні (Structural):</strong></p>
+                            <ul>
+                                <li><strong>Decorator:</strong> динамічне додавання поведінки об'єкту. В Python — синтаксичний <code>@decorator</code>.</li>
+                                <li><strong>Adapter:</strong> узгодження несумісних інтерфейсів. Обгортки над сторонніми бібліотеками.</li>
+                            </ul>
+                            <p><strong>Поведінкові (Behavioral):</strong></p>
+                            <ul>
+                                <li><strong>Observer:</strong> підписка на події. Airflow callbacks, event-driven архітектура.</li>
+                                <li><strong>Strategy:</strong> вибір алгоритму в runtime. Різні стратегії партиціонування або серіалізації.</li>
+                                <li><strong>Template Method:</strong> визначення кістяка алгоритму в базовому класі. Базовий ETL-клас з абстрактними методами extract/transform/load.</li>
+                                <li><strong>Command:</strong> інкапсуляція запиту як об'єкта. Airflow Operators реалізують цей патерн.</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <button class="faq-question">
+                        88. Що таке PYTHONPATH і що він робить?
+                        <span class="toggle-icon">+</span>
+                    </button>
+                    <div class="faq-answer">
+                        <div class="answer-content">
+                            <p><strong>PYTHONPATH</strong> — це змінна середовища (environment variable), що містить список директорій, які Python додає до <code>sys.path</code> при запуску інтерпретатора. <code>sys.path</code> — це список шляхів, де Python шукає модулі при виконанні <code>import</code>.</p>
+                            <p><strong>Як це працює:</strong> при виконанні <code>import my_module</code> Python послідовно переглядає директорії з <code>sys.path</code>. Якщо директорія зазначена в PYTHONPATH, Python шукатиме модулі й там.</p>
+                            <p><strong>Практичне використання:</strong></p>
+                            <ul>
+                                <li>Дозволяє імпортувати модулі з нестандартних місць без встановлення пакетів через pip.</li>
+                                <li>Корисно при розробці: <code>export PYTHONPATH=/path/to/project/src</code> дозволяє запускати скрипти з кореневої директорії без проблем з відносними імпортами.</li>
+                                <li>В Airflow PYTHONPATH часто налаштовується для доступу до спільних утиліт та custom operators з DAG-файлів.</li>
+                            </ul>
+                            <p><strong>Порядок пошуку в sys.path:</strong> вбудовані модулі → директорія скрипта → PYTHONPATH → стандартна бібліотека → site-packages (встановлені пакети).</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <button class="faq-question">
+                        89. Що таке замикання (closures) у Python і як вони працюють?
+                        <span class="toggle-icon">+</span>
+                    </button>
+                    <div class="faq-answer">
+                        <div class="answer-content">
+                            <p><strong>Замикання (closure)</strong> — це функція, яка "запам'ятовує" змінні зі свого лексичного оточення (enclosing scope), навіть коли зовнішня функція вже завершила виконання.</p>
+                            <p>Для утворення замикання потрібно: вкладена функція всередині зовнішньої, внутрішня функція посилається на змінні зовнішньої, зовнішня функція повертає внутрішню.</p>
+                            <p>Приклад: функція <code>make_multiplier(n)</code> повертає функцію, яка множить аргумент на <code>n</code>. Значення <code>n</code> "захоплюється" замиканням і зберігається у <code>__closure__</code> атрибуті внутрішньої функції.</p>
+                            <ul>
+                                <li><strong>Застосування:</strong> декоратори (найпоширеніший use case), фабрики функцій, часткове застосування (partial application), callback-функції із збереженням стану.</li>
+                                <li><strong>Нюанс з циклами:</strong> класична пастка — замикання у циклі захоплює <em>змінну</em>, а не <em>значення</em>. <code>fns = [lambda: i for i in range(3)]</code> — всі lambda повернуть 2. Рішення: <code>lambda i=i: i</code> або <code>functools.partial</code>.</li>
+                                <li><strong>nonlocal:</strong> для зміни (не лише читання) змінної із зовнішнього scope — використовувати ключове слово <code>nonlocal</code>.</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <button class="faq-question">
+                        90. Як реалізовано ООП у Python порівняно з іншими мовами? Унікальні особливості?
+                        <span class="toggle-icon">+</span>
+                    </button>
+                    <div class="faq-answer">
+                        <div class="answer-content">
+                            <p>ООП у Python має кілька унікальних особливостей порівняно з Java або C++:</p>
+                            <ul>
+                                <li><strong>Все є об'єктом:</strong> навіть класи, функції та модулі є об'єктами — екземплярами своїх метакласів. Це дозволяє передавати класи як аргументи, зберігати у змінних, модифікувати динамічно.</li>
+                                <li><strong>Немає справжньої інкапсуляції:</strong> Python не має private/protected ключових слів. Конвенція: <code>_name</code> — "захищений" (не для зовнішнього використання), <code>__name</code> — name mangling (трансформується у <code>_ClassName__name</code>). Але технічно доступ можливий.</li>
+                                <li><strong>Duck typing:</strong> "якщо об'єкт крякає як качка — це качка". Не перевіряється тип, а наявність потрібних методів/атрибутів.</li>
+                                <li><strong>Множинне успадкування:</strong> Python підтримує успадкування від кількох батьків з MRO (C3 linearization).</li>
+                                <li><strong>Магічні методи (dunder):</strong> <code>__init__</code>, <code>__str__</code>, <code>__repr__</code>, <code>__len__</code>, <code>__eq__</code> тощо дозволяють перевантажувати оператори та інтегруватись з Python-протоколами.</li>
+                                <li><strong>Метакласи:</strong> класи, що визначають поведінку інших класів. Використовуються фреймворками (Django ORM, SQLAlchemy).</li>
+                                <li><strong>Дескриптори та properties:</strong> <code>@property</code> для контрольованого доступу до атрибутів без явних getter/setter методів.</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <button class="faq-question">
+                        91. Чи може клас мати двох батьків у Python? Коли це корисно?
+                        <span class="toggle-icon">+</span>
+                    </button>
+                    <div class="faq-answer">
+                        <div class="answer-content">
+                            <p><strong>Так, Python підтримує множинне успадкування.</strong> Клас може успадковуватись від довільної кількості батьківських класів: <code>class Child(Parent1, Parent2, Parent3): ...</code></p>
+                            <p><strong>Коли множинне успадкування корисне:</strong></p>
+                            <ul>
+                                <li><strong>Mixin-класи:</strong> найпоширеніший і найбезпечніший use case. Mixin — невеликий клас, що додає одну конкретну функціональність (наприклад, <code>SerializableMixin</code>, <code>LoggingMixin</code>, <code>TimestampMixin</code>). Основний клас успадковує потрібні Mixin'и: <code>class User(TimestampMixin, SerializableMixin, BaseModel)</code>.</li>
+                                <li><strong>Абстрактні інтерфейси:</strong> реалізація кількох протоколів (аналог interfaces у Java).</li>
+                            </ul>
+                            <p><strong>Проблема Diamond (ромбоподібне успадкування):</strong> якщо два батьки мають спільного предка і обидва перевизначають метод — який виклик виконається? Python вирішує це через <strong>MRO (Method Resolution Order)</strong> з алгоритмом C3 linearization, що гарантує детермінований порядок.</p>
+                            <p><strong>Антипатерн:</strong> глибокі ієрархії множинного успадкування між "звичайними" класами (не Mixin) ускладнюють код. Композиція часто краща за множинне успадкування.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <button class="faq-question">
+                        92. Що таке MRO (Method Resolution Order) у Python і як він визначає порядок виклику методів?
+                        <span class="toggle-icon">+</span>
+                    </button>
+                    <div class="faq-answer">
+                        <div class="answer-content">
+                            <p><strong>MRO (Method Resolution Order)</strong> — це порядок, в якому Python шукає метод або атрибут у ієрархії класів при множинному успадкуванні. Визначає, яка реалізація методу буде викликана при конфлікті.</p>
+                            <p>Python використовує алгоритм <strong>C3 linearization</strong> (з Python 2.3). Правила:</p>
+                            <ul>
+                                <li>Клас завжди стоїть перед своїми батьками.</li>
+                                <li>Якщо клас має кілька батьків — вони йдуть у порядку оголошення.</li>
+                                <li>Консистентність зберігається по всьому дереву успадкування.</li>
+                            </ul>
+                            <p>Перегляд MRO: <code>MyClass.__mro__</code> або <code>MyClass.mro()</code> повертає список класів у порядку пошуку.</p>
+                            <p>Для класу <code>class D(B, C)</code>, де B і C обидва успадковують A: MRO буде D → B → C → A → object. При виклику <code>super()</code> Python слідує MRO — <code>super()</code> у кожному класі викликає наступний у ланцюжку MRO, що дозволяє коректно реалізувати cooperative multiple inheritance (кооперативне множинне успадкування).</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <button class="faq-question">
+                        93. Як об'єднувати Series або DataFrame у Pandas?
+                        <span class="toggle-icon">+</span>
+                    </button>
+                    <div class="faq-answer">
+                        <div class="answer-content">
+                            <p>Pandas надає кілька методів для об'єднання даних, кожен для своєї задачі:</p>
+                            <ul>
+                                <li><strong>pd.concat():</strong> об'єднання по осі (вертикально або горизонтально). <code>pd.concat([df1, df2])</code> — стекування рядків (axis=0). <code>pd.concat([df1, df2], axis=1)</code> — об'єднання колонок. Аналог UNION в SQL.</li>
+                                <li><strong>pd.merge():</strong> реляційне об'єднання (JOIN). <code>pd.merge(df1, df2, on='key', how='inner')</code>. Типи: inner, left, right, outer, cross. Аналог JOIN в SQL. Найгнучкіший варіант.</li>
+                                <li><strong>df.join():</strong> спрощений варіант merge для об'єднання по індексу. <code>df1.join(df2)</code> — лівий join по індексу за замовчуванням.</li>
+                                <li><strong>df.append() / pd.concat():</strong> append застарів (deprecated з Pandas 1.4) на користь <code>pd.concat()</code>.</li>
+                            </ul>
+                            <p><strong>Важливі параметри merge:</strong> <code>left_on/right_on</code> для різних назв ключів, <code>suffixes</code> для колонок з однаковими назвами, <code>validate</code> для перевірки відношення (1:1, 1:m, m:1). При великих DataFrame — розглянути <code>dask</code> або Spark для розподіленого об'єднання.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <button class="faq-question">
+                        94. Які типи автоматизованих тестів ви знаєте? Які використовували?
+                        <span class="toggle-icon">+</span>
+                    </button>
+                    <div class="faq-answer">
+                        <div class="answer-content">
+                            <p>Основні типи автоматизованих тестів у порядку від найдрібніших до найширших:</p>
+                            <ul>
+                                <li><strong>Unit tests (модульні):</strong> тестування окремої функції або методу в ізоляції. Швидкі, дешеві, багато їх. Залежності замінюються mock'ами.</li>
+                                <li><strong>Integration tests (інтеграційні):</strong> тестування взаємодії між кількома компонентами (наприклад, функція + реальна БД або два модулі разом).</li>
+                                <li><strong>End-to-End (E2E) tests:</strong> тестування повного сценарію від початку до кінця (від API-запиту до запису в БД).</li>
+                                <li><strong>Contract tests:</strong> перевірка, що API або повідомлення відповідають узгодженому контракту (Pact framework).</li>
+                                <li><strong>Performance tests:</strong> навантажувальне тестування, перевірка часу виконання (locust, pytest-benchmark).</li>
+                                <li><strong>Data Quality tests:</strong> перевірка якості даних у пайплайнах (Great Expectations, dbt tests).</li>
+                                <li><strong>Regression tests:</strong> переконання, що нові зміни не зламали наявну функціональність.</li>
+                            </ul>
+                            <p>Для data engineering особливо важливі: unit tests для трансформаційної логіки, integration tests з тестовими БД, data quality tests у пайплайнах.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <button class="faq-question">
+                        95. У чому різниця між модульними (unit) та інтеграційними (integration) тестами?
+                        <span class="toggle-icon">+</span>
+                    </button>
+                    <div class="faq-answer">
+                        <div class="answer-content">
+                            <p><strong>Unit tests (модульні тести):</strong></p>
+                            <ul>
+                                <li>Тестують одну функцію/метод/клас у повній ізоляції.</li>
+                                <li>Усі зовнішні залежності (БД, API, файли, інші модулі) замінюються mock/stub/fake об'єктами.</li>
+                                <li>Дуже швидкі (мілісекунди), запускаються тисячами.</li>
+                                <li>Легко знайти де саме зламалось — тест дуже специфічний.</li>
+                                <li>Не виявляють проблеми інтеграції між компонентами.</li>
+                            </ul>
+                            <p><strong>Integration tests (інтеграційні тести):</strong></p>
+                            <ul>
+                                <li>Тестують взаємодію кількох реальних компонентів разом.</li>
+                                <li>Можуть використовувати реальну (або тестову) БД, файлову систему, сторонній сервіс.</li>
+                                <li>Повільніші та дорожчі в налаштуванні.</li>
+                                <li>Виявляють проблеми, невидимі в unit tests: несумісність схем, помилки SQL, проблеми конфігурації.</li>
+                            </ul>
+                            <p><strong>Піраміда тестування:</strong> рекомендується мати багато unit тестів (основа), менше integration і ще менше E2E. У data engineering це: unit тести для Python-функцій трансформацій + integration тести Spark jobs з локальним SparkSession + data quality тести в пайплайні.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <button class="faq-question">
+                        96. Які бібліотеки Python використовуєте для тестування?
+                        <span class="toggle-icon">+</span>
+                    </button>
+                    <div class="faq-answer">
+                        <div class="answer-content">
+                            <p><strong>Основні фреймворки:</strong></p>
+                            <ul>
+                                <li><strong>pytest:</strong> де-факто стандарт. Проста синтаксис (без класів), fixtures, параметризація, плагіни. <code>assert</code> замість спеціальних методів.</li>
+                                <li><strong>unittest:</strong> вбудований у стандартну бібліотеку. Класовий підхід (наслідування від <code>TestCase</code>). Більш verbose, але не потребує встановлення.</li>
+                            </ul>
+                            <p><strong>Мокінг та заглушки:</strong></p>
+                            <ul>
+                                <li><strong>unittest.mock</strong> (вбудований): <code>Mock</code>, <code>MagicMock</code>, <code>patch</code> декоратор/контекст-менеджер. Замінює реальні залежності.</li>
+                                <li><strong>pytest-mock:</strong> pytest-плагін, що надає <code>mocker</code> fixture для зручного мокінгу.</li>
+                            </ul>
+                            <p><strong>Додаткові інструменти:</strong></p>
+                            <ul>
+                                <li><strong>pytest-cov:</strong> вимірювання покриття коду тестами (coverage.py інтеграція).</li>
+                                <li><strong>pytest-spark:</strong> для тестування PySpark коду.</li>
+                                <li><strong>factory_boy / faker:</strong> генерація тестових даних.</li>
+                                <li><strong>hypothesis:</strong> property-based testing — автоматична генерація тестових кейсів.</li>
+                                <li><strong>responses / httpretty:</strong> мокінг HTTP-запитів.</li>
+                                <li><strong>freezegun:</strong> мокінг поточного часу для детерміністичних тестів.</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <button class="faq-question">
+                        97. Чи потрібно покривати весь код тестами? Який відсоток покриття має бути?
+                        <span class="toggle-icon">+</span>
+                    </button>
+                    <div class="faq-answer">
+                        <div class="answer-content">
+                            <p><strong>100% покриття — не мета і не гарантія якості.</strong> Покриття коду (code coverage) вимірює, які рядки коду виконувались під час тестів, але не гарантує, що логіка перевірена коректно. Можна мати 100% покриття з марними тестами без assert'ів.</p>
+                            <p><strong>Рекомендовані орієнтири:</strong></p>
+                            <ul>
+                                <li>80-90% — хороший показник для більшості проектів.</li>
+                                <li>Критична бізнес-логіка, трансформаційні функції — прагнути до 90%+.</li>
+                                <li>Конфігураційний код, glue-код, main-функції — менш критичні.</li>
+                            </ul>
+                            <p><strong>Що важливіше за відсоток покриття:</strong></p>
+                            <ul>
+                                <li>Якість тестів: чи перевіряють граничні умови (edge cases), негативні сценарії, помилкові вхідні дані?</li>
+                                <li>Тести мають бути читабельними, підтримуваними та швидкими.</li>
+                                <li>Тестувати бізнес-логіку, а не тривіальний getter/setter код.</li>
+                            </ul>
+                            <p>Код, що <em>не потребує</em> тестів: migration scripts (одноразові), конфігурація, прості data class'и без логіки, зовнішні бібліотеки.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <button class="faq-question">
+                        98. Поясніть роботу протоколу HTTP. Які типи запитів існують? З чого складається тіло запиту?
+                        <span class="toggle-icon">+</span>
+                    </button>
+                    <div class="faq-answer">
+                        <div class="answer-content">
+                            <p><strong>HTTP (HyperText Transfer Protocol)</strong> — протокол прикладного рівня для передачі даних у мережі Інтернет. Побудований за моделлю "запит-відповідь": клієнт надсилає запит, сервер повертає відповідь. Без'єднувальний (stateless) — кожен запит незалежний.</p>
+                            <p><strong>Типи HTTP-методів (verbs):</strong></p>
+                            <ul>
+                                <li><strong>GET:</strong> отримання ресурсу. Без тіла запиту. Ідемпотентний, кешований.</li>
+                                <li><strong>POST:</strong> створення нового ресурсу або відправка даних. Має тіло.</li>
+                                <li><strong>PUT:</strong> повна заміна ресурсу. Ідемпотентний.</li>
+                                <li><strong>PATCH:</strong> часткове оновлення ресурсу.</li>
+                                <li><strong>DELETE:</strong> видалення ресурсу. Ідемпотентний.</li>
+                                <li><strong>HEAD:</strong> як GET, але без тіла відповіді (лише заголовки).</li>
+                                <li><strong>OPTIONS:</strong> запит доступних методів (CORS preflight).</li>
+                            </ul>
+                            <p><strong>Структура HTTP-запиту:</strong></p>
+                            <ul>
+                                <li><strong>Стартовий рядок:</strong> метод, URL, версія протоколу (наприклад, <code>POST /api/data HTTP/1.1</code>).</li>
+                                <li><strong>Заголовки (Headers):</strong> метадані: <code>Content-Type</code>, <code>Authorization</code>, <code>Accept</code>, <code>Cookie</code>.</li>
+                                <li><strong>Порожній рядок:</strong> відділяє заголовки від тіла.</li>
+                                <li><strong>Тіло (Body):</strong> дані запиту (для POST/PUT/PATCH). Формат визначається <code>Content-Type</code>: JSON (<code>application/json</code>), XML, form-data, binary.</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <button class="faq-question">
+                        99. Що виведе цей код і чому?
+                        <span class="toggle-icon">+</span>
+                    </button>
+                    <div class="faq-answer">
+                        <div class="answer-content">
+                            <pre><code>x = 10
+y = "5"
+result = x + y
+print(result)</code></pre>
+                            <p><strong>Результат:</strong> код викличе <strong>TypeError</strong> і завершиться з помилкою, нічого не виводячи.</p>
+                            <p><strong>Чому:</strong> Python є суворо типізованою мовою і не виконує неявного перетворення типів між несумісними типами. Оператор <code>+</code> між <code>int</code> (10) та <code>str</code> ("5") не визначений — інтерпретатор не знає, що саме мається на увазі: математичне додавання (15) чи конкатенація рядків ("105").</p>
+                            <p>Точне повідомлення про помилку: <code>TypeError: unsupported operand type(s) for +: 'int' and 'str'</code></p>
+                            <p><strong>Щоб виправити:</strong></p>
+                            <ul>
+                                <li>Для числового додавання: <code>result = x + int(y)</code> → <code>15</code></li>
+                                <li>Для конкатенації рядків: <code>result = str(x) + y</code> → <code>"105"</code></li>
+                            </ul>
+                            <p>Це поведінка відрізняється від JavaScript (<code>10 + "5" = "105"</code>) або PHP, де відбувається неявне перетворення типів.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <button class="faq-question">
+                        100. Що виведе цей код і чому?
+                        <span class="toggle-icon">+</span>
+                    </button>
+                    <div class="faq-answer">
+                        <div class="answer-content">
+                            <pre><code>def add_numbers(a, b=[]):
+    b.append(a)
+    return b
+print(add_numbers(5))
+print(add_numbers(10))</code></pre>
+                            <p><strong>Результат:</strong></p>
+                            <pre><code>[5]
+[5, 10]</code></pre>
+                            <p><strong>Чому:</strong> це класична пастка Python — <strong>мутабельний аргумент за замовчуванням</strong>. Значення за замовчуванням <code>b=[]</code> створюється <em>один раз</em> при визначенні функції, а не при кожному виклику. Порожній список <code>[]</code> зберігається у атрибуті <code>add_numbers.__defaults__[0]</code> і shared між усіма викликами, де <code>b</code> не передається явно.</p>
+                            <ul>
+                                <li>Перший виклик <code>add_numbers(5)</code>: до єдиного списку додається 5 → <code>[5]</code>.</li>
+                                <li>Другий виклик <code>add_numbers(10)</code>: той самий список, тепер додається 10 → <code>[5, 10]</code>.</li>
+                            </ul>
+                            <p><strong>Правильна реалізація:</strong></p>
+                            <pre><code>def add_numbers(a, b=None):
+    if b is None:
+        b = []
+    b.append(a)
+    return b</code></pre>
+                            <p>Правило: ніколи не використовувати мутабельні типи (<code>[]</code>, <code>{}</code>, <code>set()</code>) як значення за замовчуванням у параметрах функції.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <button class="faq-question">
+                        101. Опишіть покроково, як би ви зібрали дані з одного джерела та зберегли до Data Lake/Data Warehouse.
+                        <span class="toggle-icon">+</span>
+                    </button>
+                    <div class="faq-answer">
+                        <div class="answer-content">
+                            <p>Покроковий процес побудови data pipeline від джерела до DWH:</p>
+                            <ul>
+                                <li><strong>1. Аналіз джерела:</strong> дослідити структуру даних (схема, типи, обсяг), метод доступу (API, JDBC, файловий export, CDC), частоту оновлення, обмеження (rate limits, вікна доступу).</li>
+                                <li><strong>2. Ingestion до Raw Layer (Bronze):</strong> завантажити дані у сирому вигляді до Data Lake (S3/GCS/ADLS). Зберегти оригінальний формат. Додати метадані: timestamp завантаження, джерело, версія. Інструменти: Fivetran, Airbyte, кастомний Python + boto3, Spark.</li>
+                                <li><strong>3. Валідація та профілювання:</strong> перевірити completeness (кількість рядків відповідає очікуваному), схему (типи колонок), наявність дублікатів та null у ключових полях.</li>
+                                <li><strong>4. Трансформація (Silver Layer):</strong> очищення та стандартизація (формати дат, кодування, trim рядків), дедуплікація, нормалізація або денормалізація. Записати у Parquet/Delta format.</li>
+                                <li><strong>5. Бізнес-логіка (Gold Layer / DWH):</strong> застосування бізнес-правил, розрахунок метрик, побудова fact та dimension таблиць. Завантаження до DWH через COPY або MERGE.</li>
+                                <li><strong>6. Оркестрація та моніторинг:</strong> обернути в Airflow DAG з залежностями між кроками, налаштувати алерти на провал, додати data quality перевірки після кожного кроку.</li>
+                                <li><strong>7. Документація та lineage:</strong> зафіксувати в Data Catalog: джерело, трансформації, власник, розклад оновлення.</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <button class="faq-question">
+                        102. Що потрібно моніторити при обробці даних та управлінні їх якістю? Які метрики або події свідчать про проблеми?
+                        <span class="toggle-icon">+</span>
+                    </button>
+                    <div class="faq-answer">
+                        <div class="answer-content">
+                            <p>Моніторинг data pipeline охоплює кілька рівнів:</p>
+                            <p><strong>Операційні метрики (Infrastructure):</strong></p>
+                            <ul>
+                                <li>CPU, пам'ять, диск на вузлах кластера.</li>
+                                <li>Consumer lag у Kafka — ключовий індикатор відставання стрімінгу.</li>
+                                <li>Час виконання задач (task duration) та порівняння з baseline.</li>
+                                <li>Кількість перезапусків та retry задач.</li>
+                            </ul>
+                            <p><strong>Метрики якості даних:</strong></p>
+                            <ul>
+                                <li><strong>Freshness (свіжість):</strong> коли востаннє оновлювалась таблиця? Затримка понад N годин — алерт.</li>
+                                <li><strong>Volume (обсяг):</strong> кількість рядків per run. Різке падіння (&gt;20%) або зростання — сигнал проблеми у джерелі або дублікатів.</li>
+                                <li><strong>Null rate:</strong> зростання відсотку null у обов'язкових колонках.</li>
+                                <li><strong>Uniques та дублікати:</strong> порушення унікальності primary key.</li>
+                                <li><strong>Distribution shift:</strong> значне відхилення розподілу числових колонок від норми (anomaly detection).</li>
+                                <li><strong>Referential integrity:</strong> orphan records без відповідних записів у dimension таблицях.</li>
+                            </ul>
+                            <p><strong>Бізнес-метрики:</strong> відхилення ключових KPI від очікуваних значень (наприклад, кількість транзакцій за день впала до нуля). Reconciliation: різниця між count у джерелі та цільовій системі.</p>
+                            <p>Інструменти: Grafana + Prometheus для інфраструктури, Monte Carlo/Soda для якості даних, Airflow UI для стану DAG, PagerDuty/Slack для алертів.</p>
                         </div>
                     </div>
                 </div>
