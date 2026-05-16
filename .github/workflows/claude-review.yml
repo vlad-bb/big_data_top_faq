@@ -41,7 +41,7 @@ jobs:
         run: npm install -g @anthropic-ai/claude-code
 
       # Отримуємо попередній Claude review для цього PR.
-      # ЕКЗАМЕН: re-review mechanism — unikнення дублікатів при нових комітах.
+      # ЕКЗАМЕН: re-review mechanism — уникнення дублікатів при нових комітах.
       # Claude отримує попередній review як контекст і звітує лише про НОВІ або невирішені проблеми.
       - name: Get previous review
         env:
@@ -93,6 +93,11 @@ jobs:
           PREV=$(cat /tmp/previous_review.txt)
           git diff origin/${{ github.base_ref }}...HEAD > /tmp/diff.txt
 
+          # Обрізаємо попередній review щоб не спалювати зайві токени
+          if [ -n "$PREV" ] && [ "${#PREV}" -gt 3000 ]; then
+            PREV="${PREV:0:3000}...[truncated]"
+          fi
+
           # Будуємо промпт у файлі щоб безпечно включити попередній review
           cat > /tmp/prompt.txt << 'PROMPT_EOF'
           You are a code reviewer for a static web project.
@@ -105,11 +110,6 @@ jobs:
 
           if [ -n "$PREV" ]; then
             printf '\nPrevious review findings — do NOT repeat resolved issues, flag only NEW or still-unaddressed ones:\n<previous_review>\n%s\n</previous_review>\n' "$PREV" >> /tmp/prompt.txt
-          fi
-
-          # Обрізаємо попередній review щоб не спалювати зайві токени
-          if [ -n "$PREV" ] && [ "${#PREV}" -gt 3000 ]; then
-            PREV="${PREV:0:3000}...[truncated]"
           fi
 
           SCHEMA='{"type":"object","properties":{"summary":{"type":"string"},"issues":{"type":"array","items":{"type":"object","properties":{"severity":{"type":"string","enum":["high","medium","low"]},"file":{"type":"string"},"description":{"type":"string"}},"required":["severity","description"]}}},"required":["summary","issues"]}'
