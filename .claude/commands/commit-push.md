@@ -24,7 +24,20 @@ Follow these steps exactly:
    ```
    Use `$BASE` as the target for the PR.
 8. Push the current branch to origin. If the branch has no upstream yet, use `git push -u origin HEAD`.
-9. Create a PR with `gh pr create --base "$BASE"` targeting the base branch detected in step 7. Write a short PR body with: a summary bullet list of what changed and why, and a test plan.
+9. Create a PR targeting the base branch detected in step 7 by providing an explicit title and body so the command does not prompt interactively:
+   ```bash
+   PR_TITLE=$(git log -1 --pretty=%s)
+   PR_BODY_FILE=$(mktemp)
+   cat > "$PR_BODY_FILE" <<'EOF'
+   ## Summary
+   - Describe what changed.
+   - Explain why the change was made.
+
+   ## Test Plan
+   - Describe how you verified the change.
+   EOF
+   gh pr create --base "$BASE" --title "$PR_TITLE" --body-file "$PR_BODY_FILE"
+   ```
 10. Return the PR URL to the user.
 
 If any step fails, stop and explain what went wrong before continuing.
