@@ -15,7 +15,7 @@ Follow these steps exactly:
    BASE=$(git log --decorate --simplify-by-decoration --oneline HEAD \
      | grep -v "HEAD" \
      | head -1 \
-     | grep -oP '(?<=origin/)[^,)]+' \
+     | sed -n 's/.*origin\/\([^,)]*\).*/\1/p' \
      | head -1)
    # Fall back to the repo default branch if parent branch cannot be detected
    if [ -z "$BASE" ]; then
