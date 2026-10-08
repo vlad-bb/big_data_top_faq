@@ -3719,7 +3719,7 @@ print(add_numbers(10))</code></pre>
                             <li><strong>Читання через JDBC:</strong> за замовчуванням — <em>одна партиція</em>, тобто одне з'єднання та одна задача. Для паралелізму треба задати <code>partitionColumn</code>, <code>lowerBound</code>, <code>upperBound</code>, <code>numPartitions</code>.</li>
                             <li><strong>Після shuffle</strong> (join, groupBy): <code>spark.sql.shuffle.partitions</code> (200 за замовчуванням). AQE об'єднує дрібні партиції до <code>advisoryPartitionSizeInBytes</code> (64 МБ).</li>
                             <li><strong>RDD:</strong> <code>spark.default.parallelism</code>, зазвичай кількість усіх ядер кластера.</li>
-                            <li><strong>Запис:</strong> кожна партиція DataFrame пише щонайменше один файл у кожну директорію <code>partitionBy</code>, тому 200 партицій × 100 дат можуть дати 20 000 файлів.</li>
+                            <li><strong>Запис:</strong> кожна партиція DataFrame пише окремий файл у кожну директорію <code>partitionBy</code>, для якої містить дані. У гіршому випадку (наприклад, після випадкового shuffle) 200 партицій × 100 дат дадуть 20 000 файлів. Рішення — <code>df.repartition("date").write.partitionBy("date")</code>, щоб усі рядки однієї дати потрапили в одну партицію.</li>
                             </ul>
                             <p><strong>Практичні правила:</strong> 100–200 МБ даних на партицію, у 2–4 рази більше задач, ніж ядер. Перевірка: <code>df.rdd.getNumPartitions()</code> та Spark UI. Керування: <code>repartition</code> / <code>coalesce</code> (Middle-питання 107), налаштування <code>shuffle.partitions</code>, AQE.</p>
                         </div>
