@@ -16,7 +16,7 @@ Three files form the entire application:
 
 - **`index.html`** — Data and markup. Contains all 248 FAQ items split across three hidden `<div>` elements (`#junior-questions`, `#middle-questions`, `#senior-questions`): 60 Junior, 132 Middle, 56 Senior. Each item is a `.faq-item` div with a `.faq-question` button and a `.faq-answer` div. The level-selection screen (`#level-cards`) is shown by default. A search input (`#search-input`) in the header filters across all levels.
 
-- **`styles.css`** — Theming via CSS custom properties, 3-column grid for the level cards, accordion animation with `max-height` transitions (0 → 1000px), a 900px-max-width container, and search/badge styles.
+- **`styles.css`** — Theming via CSS custom properties, 3-column grid for the level cards, accordion animation with `max-height` transitions (0 → 3000px), a 900px-max-width container, and search/badge styles.
 
 - **`scripts.js`** — Responsibilities:
   - `selectLevel(level)` hides the level-selection screen and shows the matching question section.

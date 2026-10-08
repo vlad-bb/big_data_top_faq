@@ -991,7 +991,7 @@
                             <ul>
                             <li><strong>INNER JOIN:</strong> лише рядки, для яких є збіг в обох таблицях.</li>
                             <li><strong>LEFT JOIN:</strong> усі рядки з лівої таблиці та збіги з правої; де збігу немає — NULL.</li>
-                            <li><strong>RIGHT JOIN:</strong> дзеркальний до LEFT JOIN.</li>
+                            <li><strong>RIGHT JOIN:</strong> дзеркальний до LEFT JOIN (докладніше — питання 9).</li>
                             <li><strong>FULL OUTER JOIN:</strong> усі рядки з обох таблиць, відсутні збіги заповнюються NULL.</li>
                             <li><strong>CROSS JOIN:</strong> декартовий добуток — кожен рядок з кожним (N × M рядків).</li>
                             <li><strong>SELF JOIN:</strong> з'єднання таблиці самої з собою (наприклад, працівник — керівник).</li>
@@ -3092,7 +3092,7 @@ print(add_numbers(10))</code></pre>
                         <div class="answer-content">
                             <ul>
                             <li><strong>Replication factor</strong> — кількість копій кожної партиції на різних брокерах (зазвичай 3).</li>
-                            <li>Одна репліка є <strong>leader</strong> (приймає запис і читання), інші — <strong>followers</strong>, які копіюють дані з лідера.</li>
+                            <li>Одна репліка є <strong>leader</strong>: вона приймає всі записи та зазвичай обслуговує читання. Інші — <strong>followers</strong>, які копіюють дані з лідера. З Kafka 2.4 (KIP-392) консюмер може читати з найближчої follower-репліки (<code>client.rack</code> + <code>replica.selector.class</code>), щоб не платити за трафік між зонами доступності.</li>
                             <li><strong>ISR (In-Sync Replicas)</strong> — репліки, що встигають синхронізуватися з лідером. Якщо лідер падає, новий обирається з ISR.</li>
                             </ul>
                             <p>Надійність запису задається комбінацією <code>acks=all</code> у продюсера та <code>min.insync.replicas=2</code> на топіку: запис підтверджується лише тоді, коли його отримали щонайменше дві синхронні репліки.</p>
@@ -3507,7 +3507,7 @@ print(add_numbers(10))</code></pre>
                             <li><strong>multiprocessing</strong> — окремі процеси зі своїм інтерпретатором і GIL; підходить для CPU-задач, але має накладні витрати на запуск процесів і передачу даних.</li>
                             <li><strong>asyncio</strong> — один потік, кооперативна багатозадачність; ідеальний для тисяч одночасних мережевих запитів (наприклад, збір даних з API).</li>
                             </ul>
-                            <p>Бібліотеки на C (NumPy, Pandas) часто звільняють GIL під час обчислень. Починаючи з Python 3.13 є експериментальна збірка без GIL (free-threaded).</p>
+                            <p>Бібліотеки на C (NumPy, Pandas) часто звільняють GIL під час обчислень. У Python 3.13 з'явилася експериментальна збірка без GIL (free-threaded), а з Python 3.14 (PEP 779) вона офіційно підтримується, хоча поки що не є збіркою за замовчуванням.</p>
                         </div>
                     </div>
                 </div>
@@ -3577,9 +3577,9 @@ print(add_numbers(10))</code></pre>
                             <li><strong>ZSTD</strong> — гарний баланс швидкості та ступеня стиснення; все частіше замінює Snappy.</li>
                             <li><strong>Gzip</strong> — високе стиснення, але повільний.</li>
                             <li><strong>LZ4</strong> — найшвидший, використовується в Kafka та ClickHouse.</li>
-                            <li><strong>Bzip2</strong> — дуже сильне, але дуже повільне стиснення.</li>
+                            <li><strong>Bzip2</strong> — дуже сильне, але дуже повільне стиснення. Єдиний поширений кодек, який <em>сам по собі splittable</em>: великий <code>.bz2</code> файл Hadoop/Spark можуть читати паралельно.</li>
                             </ul>
-                            <p><strong>Splittable</strong> означає, що файл можна розділити на частини й обробляти паралельно. Великий <code>.csv.gz</code> не splittable — його прочитає лише одна задача. Parquet, ORC та Avro splittable незалежно від кодека, бо стискають дані блоками всередині файлу.</p>
+                            <p><strong>Splittable</strong> означає, що файл можна розділити на частини й обробляти паралельно. Великий <code>.csv.gz</code> (так само як цілий файл, стиснутий Snappy чи LZ4) не splittable — його прочитає лише одна задача. Parquet, ORC та Avro splittable незалежно від кодека, бо стискають дані блоками всередині файлу.</p>
                         </div>
                     </div>
                 </div>
@@ -4118,14 +4118,17 @@ print(add_numbers(10))</code></pre>
 
                 <div class="faq-item">
                     <button class="faq-question">
-                        27. Чим відрізняються Lambda та Kappa архітектури?
+                        27. Що таке Kappa-архітектура і чим вона відрізняється від Lambda?
                         <span class="toggle-icon">+</span>
                     </button>
                     <div class="faq-answer">
                         <div class="answer-content">
                             <ul>
-                            <li><strong>Lambda-архітектура</strong> має два паралельні шари: <em>batch layer</em> (точний перерахунок усієї історії) та <em>speed layer</em> (швидкі наближені результати в реальному часі), які об'єднуються в serving layer. Мінус — дві кодові бази з однаковою логікою, які треба синхронізувати.</li>
-                            <li><strong>Kappa-архітектура</strong> має лише потоковий шар. Усі дані — це незмінний журнал подій (Kafka з довгим retention або tiered storage). Перерахунок історії виконується повторним програванням потоку новою версією job-а.</li>
+                            <li><strong>Kappa-архітектура</strong> (Jay Kreps, 2014) прибирає batch layer Lambda-архітектури (шари Lambda описані в питанні 2) і залишає <em>лише потоковий шар</em>.</li>
+                            <li>Джерело істини — незмінний журнал подій (Kafka з довгим retention або tiered storage).</li>
+                            <li><strong>Перерахунок історії:</strong> запускається нова версія streaming job-а, яка читає журнал з початку й пише в нову таблицю; коли вона наздогнала потік, споживачів перемикають на неї, а стару версію вимикають.</li>
+                            <li><strong>Головна перевага над Lambda:</strong> одна кодова база замість двох (batch і speed), які треба тримати синхронними.</li>
+                            <li><strong>Недоліки:</strong> дорого зберігати й переграти роки подій; складні історичні перерахунки та join-и з великими довідниками в потоці робити важче, ніж у batch.</li>
                             </ul>
                             <p><strong>Вибір:</strong> Kappa простіша в підтримці, якщо логіку можна виразити потоково і є можливість зберігати історію подій. Lambda (або сучасний варіант — Lakehouse з єдиним кодом для batch і streaming) доречна, коли потрібні складні історичні перерахунки та дешеве зберігання.</p>
                         </div>
@@ -4205,7 +4208,7 @@ print(add_numbers(10))</code></pre>
                             <li><strong>Transactions</strong> (<code>transactional.id</code>): продюсер атомарно записує повідомлення в кілька партицій <em>разом із</em> комітом offsets консюмера. Або все застосовується, або нічого.</li>
                             <li>Консюмери з <code>isolation.level=read_committed</code> бачать лише закомічені транзакції.</li>
                             </ul>
-                            <p><strong>Важливо:</strong> якщо результат пишеться у зовнішню систему (БД, S3), EOS Kafka не діє. Тоді потрібен ідемпотентний sink (upsert за ключем) або двофазний коміт (як у Flink <code>TwoPhaseCommitSinkFunction</code>).</p>
+                            <p><strong>Важливо:</strong> якщо результат пишеться у зовнішню систему (БД, S3), EOS Kafka не діє. Тоді потрібен ідемпотентний sink (upsert за ключем) або двофазний коміт (у Flink — Sink V2 API з <code>SupportsCommitter</code> / <code>TwoPhaseCommittingSink</code>; старий <code>TwoPhaseCommitSinkFunction</code> застарів).</p>
                         </div>
                     </div>
                 </div>
@@ -4272,6 +4275,7 @@ print(add_numbers(10))</code></pre>
                     <div class="faq-answer">
                         <div class="answer-content">
                             <ul>
+                            <li><strong>Що це таке</strong> — див. питання 8; тут зібрані практичні техніки.</li>
                             <li><strong>Діагностика:</strong> у Spark UI одна-дві задачі працюють у рази довше за медіану; у даних є «гарячі» ключі (NULL, тестовий акаунт, популярний товар).</li>
                             <li><strong>AQE skew join:</strong> <code>spark.sql.adaptive.skewJoin.enabled=true</code> автоматично ділить перекошені партиції.</li>
                             <li><strong>Broadcast join:</strong> якщо одна зі сторін мала, shuffle не потрібен взагалі.</li>

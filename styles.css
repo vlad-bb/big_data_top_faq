@@ -257,7 +257,7 @@ mark {
 }
 
 .faq-item.active .faq-answer {
-    max-height: 1000px; /* Arbitrary large max-height for animation */
+    max-height: 3000px; /* Must exceed the tallest answer on narrow screens */
 }
 
 .faq-item.active .toggle-icon {
