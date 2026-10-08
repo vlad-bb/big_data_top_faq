@@ -294,6 +294,31 @@
 
                 <div class="faq-item">
                     <button class="faq-question">
+                        11. Що таке OLTP та OLAP? У чому різниця між ними?
+                        <span class="toggle-icon">+</span>
+                    </button>
+                    <div class="faq-answer">
+                        <div class="answer-content">
+                            <p><strong>OLTP (Online Transaction Processing)</strong> та <strong>OLAP (Online Analytical
+                                    Processing)</strong> — це два типи систем обробки даних з різним призначенням.</p>
+                            <ul>
+                                <li><strong>OLTP:</strong> обслуговує щоденні операції бізнесу — велика кількість коротких
+                                    транзакцій (INSERT, UPDATE, DELETE) над окремими рядками. Дані нормалізовані, важливі
+                                    ACID-гарантії та низька затримка. Приклади: PostgreSQL, MySQL, Oracle для інтернет-магазину
+                                    чи банківської системи.</li>
+                                <li><strong>OLAP:</strong> призначена для аналітики — складні запити з агрегаціями (SUM, AVG,
+                                    GROUP BY) над мільйонами рядків, переважно читання. Дані денормалізовані (star / snowflake
+                                    схеми), часто зберігаються у колонковому форматі. Приклади: Snowflake, Amazon Redshift,
+                                    Google BigQuery, ClickHouse.</li>
+                            </ul>
+                            <p>Типовий потік: дані з OLTP-систем через ETL/ELT завантажуються в OLAP-сховище (Data Warehouse),
+                                щоб аналітичні запити не навантажували робочу базу.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <button class="faq-question">
                         12. Чим відрізняються dimension tables від fact tables?
                         <span class="toggle-icon">+</span>
                     </button>
@@ -410,28 +435,6 @@
 
                 <div class="faq-item">
                     <button class="faq-question">
-                        26. Що таке Data Lake і для чого використовується?
-                        <span class="toggle-icon">+</span>
-                    </button>
-                    <div class="faq-answer">
-                        <div class="answer-content">
-                            <p><strong>Data Lake (Озеро даних)</strong> — це централізоване сховище, що дозволяє
-                                зберігати всі структуровані, напівструктуровані та неструктуровані дані у їхньому
-                                первозданному (сирому) вигляді при будь-якому масштабі.</p>
-                            <p><strong>Для чого використовується:</strong></p>
-                            <ul>
-                                <li>Зберігання величезних масивів сирих даних з різних джерел без необхідності їх
-                                    попереднього структурування (Schema-on-read).</li>
-                                <li>Машинне навчання, предиктивна аналітика та Data Science.</li>
-                                <li>Створення єдиного джерела істини для всієї компанії (потім дані зазвичай
-                                    перетворюються та відправляються у Data Warehouse).</li>
-                            </ul>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="faq-item">
-                    <button class="faq-question">
                         20. Що таке DAG (Directed Acyclic Graph) у контексті конвеєрів даних?
                         <span class="toggle-icon">+</span>
                     </button>
@@ -512,6 +515,28 @@
                             <ul>
                                 <li><strong>List comprehension (список):</strong> <code>[x**2 for x in range(5) if x % 2 == 0]</code> -> [0, 4, 16]</li>
                                 <li><strong>Dict comprehension (словник):</strong> <code>{x: x**2 for x in range(3)}</code> -> {0: 0, 1: 1, 2: 4}</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <button class="faq-question">
+                        26. Що таке Data Lake і для чого використовується?
+                        <span class="toggle-icon">+</span>
+                    </button>
+                    <div class="faq-answer">
+                        <div class="answer-content">
+                            <p><strong>Data Lake (Озеро даних)</strong> — це централізоване сховище, що дозволяє
+                                зберігати всі структуровані, напівструктуровані та неструктуровані дані у їхньому
+                                первозданному (сирому) вигляді при будь-якому масштабі.</p>
+                            <p><strong>Для чого використовується:</strong></p>
+                            <ul>
+                                <li>Зберігання величезних масивів сирих даних з різних джерел без необхідності їх
+                                    попереднього структурування (Schema-on-read).</li>
+                                <li>Машинне навчання, предиктивна аналітика та Data Science.</li>
+                                <li>Створення єдиного джерела істини для всієї компанії (потім дані зазвичай
+                                    перетворюються та відправляються у Data Warehouse).</li>
                             </ul>
                         </div>
                     </div>
@@ -861,6 +886,189 @@
                         <div class="answer-content">
                             <p><strong>Pod (Под)</strong> — це найменший, найбазовіший об'єкт у Kubernetes, який ви можете створити або яким можна керувати.</p>
                             <p>Под — це логічна оболонка (обгортка) навколо одного або декількох тісно пов'язаних контейнерів (наприклад, Docker-контейнерів). Ці контейнери завжди запускаються разом на одному сервері, ділять спільну IP-адресу та ресурси збереження (Volumes), що дозволяє їм легко спілкуватися один з одним через localhost.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <button class="faq-question">
+                        51. Що таке Apache Kafka і для чого він використовується?
+                        <span class="toggle-icon">+</span>
+                    </button>
+                    <div class="faq-answer">
+                        <div class="answer-content">
+                            <p><strong>Apache Kafka</strong> — це розподілена платформа потокової передачі подій (event streaming), яка працює як надійний журнал повідомлень (distributed commit log).</p>
+                            <ul>
+                            <li><strong>Producer</strong> записує повідомлення в <strong>topic</strong>, <strong>Consumer</strong> читає їх.</li>
+                            <li>Повідомлення зберігаються на диску певний час (retention), тому їх можна перечитати.</li>
+                            <li>Висока пропускна здатність (мільйони подій за секунду) та горизонтальне масштабування.</li>
+                            </ul>
+                            <p><strong>Типові сценарії:</strong> збір логів і кліків, CDC з баз даних, інтеграція мікросервісів, джерело даних для Spark Streaming чи Flink.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <button class="faq-question">
+                        52. Що таке Apache Airflow і для чого він потрібен?
+                        <span class="toggle-icon">+</span>
+                    </button>
+                    <div class="faq-answer">
+                        <div class="answer-content">
+                            <p><strong>Apache Airflow</strong> — це платформа з відкритим кодом для програмного створення, планування та моніторингу робочих процесів (workflows).</p>
+                            <ul>
+                            <li>Пайплайни описуються як <strong>DAG</strong> у Python-коді (pipelines as code).</li>
+                            <li><strong>Scheduler</strong> запускає задачі за розкладом, <strong>Executor</strong> виконує їх, <strong>Web UI</strong> показує статус, логи та дозволяє перезапускати задачі.</li>
+                            <li>Підтримує retries, залежності між задачами, сповіщення про помилки.</li>
+                            </ul>
+                            <p>Важливо: Airflow — це <em>оркестратор</em>, а не рушій обробки даних. Важкі обчислення він делегує Spark, SQL-сховищу чи іншим системам.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <button class="faq-question">
+                        53. Що таке Git і які основні команди ви використовуєте?
+                        <span class="toggle-icon">+</span>
+                    </button>
+                    <div class="faq-answer">
+                        <div class="answer-content">
+                            <p><strong>Git</strong> — розподілена система контролю версій, яка зберігає історію змін коду та дозволяє команді працювати паралельно.</p>
+                            <ul>
+                            <li><code>git clone</code>, <code>git pull</code>, <code>git push</code> — робота з віддаленим репозиторієм.</li>
+                            <li><code>git add</code>, <code>git commit</code> — фіксація змін.</li>
+                            <li><code>git branch</code>, <code>git checkout</code> / <code>git switch</code> — робота з гілками.</li>
+                            <li><code>git merge</code> — об'єднує гілки, створюючи merge-коміт; <code>git rebase</code> — переносить коміти на нову базу, роблячи історію лінійною.</li>
+                            <li><code>git log</code>, <code>git diff</code>, <code>git status</code> — перегляд історії та змін.</li>
+                            </ul>
+                            <p>У командній роботі зазвичай використовують feature-гілки та Pull Request з code review.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <button class="faq-question">
+                        54. Що таке денормалізація і коли її використовують?
+                        <span class="toggle-icon">+</span>
+                    </button>
+                    <div class="faq-answer">
+                        <div class="answer-content">
+                            <p><strong>Денормалізація</strong> — це навмисне додавання надлишковості в структуру даних (дублювання полів, об'єднання таблиць), щоб пришвидшити читання.</p>
+                            <ul>
+                            <li><strong>Плюси:</strong> менше JOIN-ів, швидші аналітичні запити, простіші запити для аналітиків.</li>
+                            <li><strong>Мінуси:</strong> більше місця на диску, складніше оновлювати дані, ризик неузгодженості.</li>
+                            </ul>
+                            <p><strong>Де використовують:</strong> у Data Warehouse (star schema, широкі вітрини), у NoSQL базах (Cassandra, MongoDB), де JOIN-и дорогі або відсутні. В OLTP-системах навпаки переважає нормалізація.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <button class="faq-question">
+                        55. Що таке NULL у SQL і як правильно з ним працювати?
+                        <span class="toggle-icon">+</span>
+                    </button>
+                    <div class="faq-answer">
+                        <div class="answer-content">
+                            <p><strong>NULL</strong> означає відсутність значення (невідоме значення). Це не нуль і не порожній рядок.</p>
+                            <ul>
+                            <li>Будь-яке порівняння з NULL через <code>=</code> чи <code>&lt;&gt;</code> повертає UNKNOWN, тому треба використовувати <code>IS NULL</code> / <code>IS NOT NULL</code>.</li>
+                            <li><code>COALESCE(a, b, c)</code> повертає перше не-NULL значення; <code>NULLIF(a, b)</code> повертає NULL, якщо a = b.</li>
+                            <li>Агрегатні функції (<code>SUM</code>, <code>AVG</code>) ігнорують NULL, а <code>COUNT(*)</code> рахує всі рядки, тоді як <code>COUNT(col)</code> — лише не-NULL.</li>
+                            <li>Пастка: <code>WHERE col NOT IN (SELECT ...)</code> не поверне жодного рядка, якщо підзапит містить NULL. Краще використовувати <code>NOT EXISTS</code>.</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <button class="faq-question">
+                        56. Які типи JOIN існують у SQL і чим вони відрізняються?
+                        <span class="toggle-icon">+</span>
+                    </button>
+                    <div class="faq-answer">
+                        <div class="answer-content">
+                            <ul>
+                            <li><strong>INNER JOIN:</strong> лише рядки, для яких є збіг в обох таблицях.</li>
+                            <li><strong>LEFT JOIN:</strong> усі рядки з лівої таблиці та збіги з правої; де збігу немає — NULL.</li>
+                            <li><strong>RIGHT JOIN:</strong> дзеркальний до LEFT JOIN (докладніше — Junior-питання 9 «Для чого потрібен RIGHT JOIN»).</li>
+                            <li><strong>FULL OUTER JOIN:</strong> усі рядки з обох таблиць, відсутні збіги заповнюються NULL.</li>
+                            <li><strong>CROSS JOIN:</strong> декартовий добуток — кожен рядок з кожним (N × M рядків).</li>
+                            <li><strong>SELF JOIN:</strong> з'єднання таблиці самої з собою (наприклад, працівник — керівник).</li>
+                            </ul>
+                            <p>Окремо варто знати <strong>SEMI JOIN</strong> (<code>EXISTS</code>/<code>IN</code>) та <strong>ANTI JOIN</strong> (<code>NOT EXISTS</code>), які часто використовуються у Spark (<code>left_semi</code>, <code>left_anti</code>).</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <button class="faq-question">
+                        57. Чим відрізняються UNION та UNION ALL?
+                        <span class="toggle-icon">+</span>
+                    </button>
+                    <div class="faq-answer">
+                        <div class="answer-content">
+                            <ul>
+                            <li><strong>UNION</strong> об'єднує результати двох запитів і <em>видаляє дублікати</em>. Для цього СУБД виконує сортування або хешування, що дорого на великих обсягах.</li>
+                            <li><strong>UNION ALL</strong> просто додає рядки одного результату до іншого <em>без перевірки на дублікати</em>, тому працює значно швидше.</li>
+                            </ul>
+                            <p>В обох випадках запити мають повертати однакову кількість стовпців із сумісними типами. Якщо дублікатів бути не може (наприклад, дані з різних партицій), завжди використовуйте <code>UNION ALL</code>.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <button class="faq-question">
+                        58. Чим Pandas DataFrame відрізняється від Spark DataFrame?
+                        <span class="toggle-icon">+</span>
+                    </button>
+                    <div class="faq-answer">
+                        <div class="answer-content">
+                            <ul>
+                            <li><strong>Масштаб:</strong> Pandas працює на одній машині й тримає всі дані в оперативній пам'яті; Spark розподіляє дані між вузлами кластера.</li>
+                            <li><strong>Виконання:</strong> Pandas виконує операції одразу (eager); Spark — ліниво (lazy), будуючи план і оптимізуючи його перед запуском action.</li>
+                            <li><strong>Змінюваність:</strong> Pandas DataFrame можна змінювати на місці; Spark DataFrame незмінний (immutable) — кожна трансформація створює новий.</li>
+                            <li><strong>Індекс:</strong> у Pandas є індекс рядків, у Spark порядок рядків не гарантований.</li>
+                            </ul>
+                            <p>Правило: Pandas — для даних, що вміщуються в пам'ять (до кількох ГБ), Spark — для великих обсягів. Між ними є місток: <code>pandas API on Spark</code> та Arrow для швидкого <code>toPandas()</code>.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <button class="faq-question">
+                        59. Що таке хмарні моделі IaaS, PaaS та SaaS?
+                        <span class="toggle-icon">+</span>
+                    </button>
+                    <div class="faq-answer">
+                        <div class="answer-content">
+                            <ul>
+                            <li><strong>IaaS (Infrastructure as a Service):</strong> провайдер дає віртуальні машини, мережі, диски; ОС і все вище керуєте ви. Приклади: AWS EC2, Google Compute Engine.</li>
+                            <li><strong>PaaS (Platform as a Service):</strong> провайдер керує інфраструктурою та середовищем виконання, ви розгортаєте лише код чи задачі. Приклади: AWS Glue, Databricks, Google Dataflow, Amazon RDS.</li>
+                            <li><strong>SaaS (Software as a Service):</strong> готовий продукт, яким ви просто користуєтеся. Приклади: Snowflake, Fivetran, Looker.</li>
+                            </ul>
+                            <p>Чим вище рівень, тим менше операційної роботи, але й менше контролю над налаштуваннями.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <button class="faq-question">
+                        60. Що таке *args та **kwargs у Python?
+                        <span class="toggle-icon">+</span>
+                    </button>
+                    <div class="faq-answer">
+                        <div class="answer-content">
+                            <p>Це механізм передачі довільної кількості аргументів у функцію.</p>
+                            <ul>
+                            <li><code>*args</code> збирає додаткові позиційні аргументи в <strong>кортеж</strong> (tuple).</li>
+                            <li><code>**kwargs</code> збирає додаткові іменовані аргументи в <strong>словник</strong> (dict).</li>
+                            </ul>
+                            <pre><code>def log(level, *args, **kwargs):
+    print(level, args, kwargs)
+
+log("INFO", 1, 2, user="bob")  # INFO (1, 2) {'user': 'bob'}</code></pre>
+                            <p>Оператори <code>*</code> та <code>**</code> також розпаковують колекції під час виклику: <code>f(*my_list, **my_dict)</code>. Часто використовуються в декораторах для передачі аргументів обгорнутій функції.</p>
                         </div>
                     </div>
                 </div>
@@ -2856,6 +3064,562 @@ print(add_numbers(10))</code></pre>
                         </div>
                     </div>
                 </div>
+
+                <div class="faq-item">
+                    <button class="faq-question">
+                        103. Як влаштований Kafka: topics, partitions, offsets та consumer groups?
+                        <span class="toggle-icon">+</span>
+                    </button>
+                    <div class="faq-answer">
+                        <div class="answer-content">
+                            <ul>
+                            <li><strong>Topic</strong> — логічний канал повідомлень, поділений на <strong>partitions</strong>.</li>
+                            <li><strong>Partition</strong> — впорядкований журнал, у який повідомлення лише дописуються. Порядок гарантується тільки в межах однієї партиції. Партиція для повідомлення обирається за хешем ключа.</li>
+                            <li><strong>Offset</strong> — порядковий номер повідомлення в партиції. Consumer комітить offset, щоб після перезапуску продовжити з того ж місця.</li>
+                            <li><strong>Consumer group</strong> — група консюмерів, між якими розподіляються партиції: одну партицію в групі читає лише один консюмер. Тому максимальний паралелізм групи дорівнює кількості партицій.</li>
+                            </ul>
+                            <p>Різні consumer groups читають той самий topic незалежно, кожна зі своїми offsets.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <button class="faq-question">
+                        104. Що таке replication factor та ISR у Kafka?
+                        <span class="toggle-icon">+</span>
+                    </button>
+                    <div class="faq-answer">
+                        <div class="answer-content">
+                            <ul>
+                            <li><strong>Replication factor</strong> — кількість копій кожної партиції на різних брокерах (зазвичай 3).</li>
+                            <li>Одна репліка є <strong>leader</strong>: вона приймає всі записи та зазвичай обслуговує читання. Інші — <strong>followers</strong>, які копіюють дані з лідера. З Kafka 2.4 (KIP-392) консюмер може читати з найближчої follower-репліки (<code>client.rack</code> + <code>replica.selector.class</code>), щоб не платити за трафік між зонами доступності.</li>
+                            <li><strong>ISR (In-Sync Replicas)</strong> — репліки, що встигають синхронізуватися з лідером. Якщо лідер падає, новий обирається з ISR.</li>
+                            </ul>
+                            <p>Надійність запису задається комбінацією <code>acks=all</code> у продюсера та <code>min.insync.replicas=2</code> на топіку: запис підтверджується лише тоді, коли його отримали щонайменше дві синхронні репліки.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <button class="faq-question">
+                        105. Що таке Catalyst Optimizer і Tungsten у Spark?
+                        <span class="toggle-icon">+</span>
+                    </button>
+                    <div class="faq-answer">
+                        <div class="answer-content">
+                            <ul>
+                            <li><strong>Catalyst</strong> — оптимізатор запитів Spark SQL/DataFrame. Він проходить етапи: аналіз логічного плану, логічна оптимізація (predicate pushdown, column pruning, constant folding), вибір фізичного плану (наприклад, тип join) та генерація коду.</li>
+                            <li><strong>Tungsten</strong> — рушій виконання, що оптимізує роботу з пам'яттю та CPU: компактний бінарний формат рядків (UnsafeRow) з явним керуванням пам'яттю та опціональним зберіганням поза JVM-купою (off-heap, <code>spark.memory.offHeap.enabled</code>), whole-stage code generation (злиття операторів в одну Java-функцію), менше навантаження на Garbage Collector.</li>
+                            </ul>
+                            <p>Саме завдяки Catalyst і Tungsten DataFrame API зазвичай значно швидший за RDD, а Python UDF — повільніші, бо є «чорною скринькою» для оптимізатора.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <button class="faq-question">
+                        106. Що таке Adaptive Query Execution (AQE) у Spark?
+                        <span class="toggle-icon">+</span>
+                    </button>
+                    <div class="faq-answer">
+                        <div class="answer-content">
+                            <p><strong>AQE</strong> (Spark 3.0+, увімкнено за замовчуванням з 3.2) — механізм, що переоптимізовує план запиту <em>під час виконання</em>, використовуючи реальну статистику після кожного shuffle-етапу.</p>
+                            <ul>
+                            <li><strong>Об'єднання дрібних партицій</strong> після shuffle (coalesce), щоб не запускати тисячі дрібних задач.</li>
+                            <li><strong>Динамічна заміна sort-merge join на broadcast join</strong>, якщо одна зі сторін виявилася малою.</li>
+                            <li><strong>Обробка skew join:</strong> розбиття перекошених партицій на менші частини.</li>
+                            </ul>
+                            <p>Ключовий параметр: <code>spark.sql.adaptive.enabled=true</code>.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <button class="faq-question">
+                        107. У чому різниця між repartition та coalesce у Spark?
+                        <span class="toggle-icon">+</span>
+                    </button>
+                    <div class="faq-answer">
+                        <div class="answer-content">
+                            <ul>
+                            <li><strong>repartition(n)</strong> — виконує повний <strong>shuffle</strong> і рівномірно перерозподіляє дані на n партицій. Може як збільшувати, так і зменшувати кількість партицій. Можна вказати колонку: <code>repartition("date")</code>.</li>
+                            <li><strong>coalesce(n)</strong> — лише <strong>зменшує</strong> кількість партицій, об'єднуючи сусідні без повного shuffle. Працює швидше, але партиції можуть вийти нерівномірними.</li>
+                            </ul>
+                            <p>Типове використання: <code>coalesce</code> перед записом, щоб не створювати тисячі дрібних файлів; <code>repartition</code> — щоб збільшити паралелізм або вирівняти дані перед важкою операцією. Обережно: <code>coalesce(1)</code> зводить усю роботу попереднього етапу до однієї задачі.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <button class="faq-question">
+                        108. Що таке UDF у Spark і чому їх варто уникати?
+                        <span class="toggle-icon">+</span>
+                    </button>
+                    <div class="faq-answer">
+                        <div class="answer-content">
+                            <p><strong>UDF (User Defined Function)</strong> — власна функція, яку можна застосувати до колонок DataFrame.</p>
+                            <ul>
+                            <li>Catalyst не бачить, що відбувається всередині UDF, тому не може її оптимізувати (наприклад, зробити predicate pushdown).</li>
+                            <li><strong>Python UDF</strong> особливо повільні: дані серіалізуються з JVM у Python-процес і назад для кожного рядка.</li>
+                            </ul>
+                            <p><strong>Що робити:</strong></p>
+                            <ul>
+                            <li>Спершу шукати вбудовані функції з <code>pyspark.sql.functions</code> (вони виконуються в JVM).</li>
+                            <li>Якщо UDF потрібна — використовувати <strong>Pandas UDF</strong> (vectorized UDF), яка передає дані пакетами через Apache Arrow і працює в рази швидше.</li>
+                            <li>Для критичних місць — писати UDF на Scala/Java.</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <button class="faq-question">
+                        109. Як налаштувати ресурси Spark-застосунку (executors, cores, memory)?
+                        <span class="toggle-icon">+</span>
+                    </button>
+                    <div class="faq-answer">
+                        <div class="answer-content">
+                            <ul>
+                            <li><code>spark.executor.instances</code> — кількість executor-ів (або динамічна алокація через <code>spark.dynamicAllocation.enabled</code>).</li>
+                            <li><code>spark.executor.cores</code> — кількість ядер на executor, тобто паралельних задач. Практичне значення — 4–5.</li>
+                            <li><code>spark.executor.memory</code> — пам'ять JVM executor-а; додатково є <code>memoryOverhead</code> (поза купою, ~10%).</li>
+                            <li><code>spark.driver.memory</code> — пам'ять драйвера (важливо при <code>collect()</code> та broadcast).</li>
+                            <li><code>spark.sql.shuffle.partitions</code> — кількість партицій після shuffle (за замовчуванням 200), підбирається так, щоб одна партиція мала ~100–200 МБ.</li>
+                            </ul>
+                            <p>Ресурси підбирають ітеративно за Spark UI: шукають spill на диск, довгі GC-паузи, нерівномірні задачі та простій ядер.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <button class="faq-question">
+                        110. Що таке shuffle у Spark і як його мінімізувати?
+                        <span class="toggle-icon">+</span>
+                    </button>
+                    <div class="faq-answer">
+                        <div class="answer-content">
+                            <p><strong>Shuffle</strong> — перерозподіл даних між executor-ами по мережі, щоб записи з однаковим ключем опинилися в одній партиції. Його викликають wide-трансформації: <code>groupBy</code>, <code>join</code>, <code>distinct</code>, <code>repartition</code>, <code>orderBy</code>.</p>
+                            <p>Shuffle дорогий: запис на диск, мережа, серіалізація. Як зменшити:</p>
+                            <ul>
+                            <li>Фільтрувати та відкидати непотрібні колонки <em>до</em> join/агрегації.</li>
+                            <li>Використовувати <strong>broadcast join</strong> для малих таблиць.</li>
+                            <li>Використовувати <code>reduceByKey</code> замість <code>groupByKey</code> у RDD (часткова агрегація до shuffle).</li>
+                            <li>Застосовувати <strong>bucketing</strong> для таблиць, які часто з'єднуються за тим самим ключем.</li>
+                            <li>Правильно підбирати <code>spark.sql.shuffle.partitions</code> та вмикати AQE.</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <button class="faq-question">
+                        111. Що таке bucketing у Spark/Hive і чим він відрізняється від партиціонування?
+                        <span class="toggle-icon">+</span>
+                    </button>
+                    <div class="faq-answer">
+                        <div class="answer-content">
+                            <ul>
+                            <li><strong>Partitioning</strong> розкладає дані по директоріях за значенням колонки (<code>date=2024-01-01/</code>). Підходить для колонок з невеликою кількістю значень і дає partition pruning при фільтрації.</li>
+                            <li><strong>Bucketing</strong> розподіляє дані за <strong>хешем</strong> колонки на фіксовану кількість файлів (бакетів). Підходить для колонок з високою кардинальністю (наприклад, <code>user_id</code>).</li>
+                            </ul>
+                            <p><strong>Перевага bucketing:</strong> якщо дві таблиці забакетовані за ключем join з однаковою кількістю бакетів, Spark може виконати join <em>без shuffle</em>. Також пришвидшує агрегації за цим ключем.</p>
+                            <pre><code>df.write.bucketBy(64, "user_id").sortBy("user_id").saveAsTable("events")</code></pre>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <button class="faq-question">
+                        112. Що таке Hive Metastore і яку роль він відіграє?
+                        <span class="toggle-icon">+</span>
+                    </button>
+                    <div class="faq-answer">
+                        <div class="answer-content">
+                            <p><strong>Hive Metastore (HMS)</strong> — сервіс, що зберігає метадані таблиць: схему, формат файлів, розташування даних (шлях в HDFS/S3), список партицій. Самі метадані лежать у реляційній БД (MySQL, PostgreSQL).</p>
+                            <ul>
+                            <li>Дозволяє працювати з файлами в Data Lake як з SQL-таблицями.</li>
+                            <li>Використовується не лише Hive, а й Spark, Presto/Trino, Impala, Flink.</li>
+                            <li>AWS Glue Data Catalog — керований сумісний аналог HMS.</li>
+                            </ul>
+                            <p>Обмеження: при мільйонах партицій HMS стає вузьким місцем, а зміни таблиць не є атомарними. Ці проблеми вирішують табличні формати Iceberg, Delta Lake та Hudi.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <button class="faq-question">
+                        113. Що таке dbt і як він використовується в ELT?
+                        <span class="toggle-icon">+</span>
+                    </button>
+                    <div class="faq-answer">
+                        <div class="answer-content">
+                            <p><strong>dbt (data build tool)</strong> — інструмент для трансформації даних всередині сховища (букву «T» в ELT) за допомогою SQL.</p>
+                            <ul>
+                            <li><strong>Моделі</strong> — це <code>SELECT</code>-запити, з яких dbt будує таблиці чи view. Залежності задаються через <code>ref()</code>, з них dbt будує DAG.</li>
+                            <li><strong>Materializations:</strong> view, table, incremental, ephemeral.</li>
+                            <li><strong>Тести:</strong> вбудовані (<code>unique</code>, <code>not_null</code>, <code>relationships</code>, <code>accepted_values</code>) та власні.</li>
+                            <li><strong>Документація та lineage</strong> генеруються автоматично.</li>
+                            <li>Jinja-шаблони та макроси дозволяють перевикористовувати код.</li>
+                            </ul>
+                            <p>dbt приносить у SQL практики розробки ПЗ: Git, code review, CI/CD, окремі середовища dev/prod.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <button class="faq-question">
+                        114. Яка архітектура Snowflake і в чому її переваги?
+                        <span class="toggle-icon">+</span>
+                    </button>
+                    <div class="faq-answer">
+                        <div class="answer-content">
+                            <p>Snowflake має три незалежні шари:</p>
+                            <ul>
+                            <li><strong>Storage:</strong> дані зберігаються в об'єктному сховищі хмари у стиснутому колонковому форматі, поділені на мікропартиції (50–500 МБ) з метаданими min/max для pruning.</li>
+                            <li><strong>Compute:</strong> <strong>Virtual Warehouses</strong> — незалежні обчислювальні кластери, які можна запускати, зупиняти та масштабувати окремо для різних навантажень (ETL, BI, Data Science).</li>
+                            <li><strong>Cloud Services:</strong> оптимізатор, метадані, безпека, транзакції.</li>
+                            </ul>
+                            <p><strong>Переваги:</strong> розділення зберігання та обчислень, оплата за секунди роботи warehouse, Time Travel, Zero-Copy Cloning, безпечний обмін даними (Data Sharing), відсутність потреби в обслуговуванні індексів.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <button class="faq-question">
+                        115. Що таке distribution style та sort keys в Amazon Redshift?
+                        <span class="toggle-icon">+</span>
+                    </button>
+                    <div class="faq-answer">
+                        <div class="answer-content">
+                            <p>Redshift — MPP-сховище, тому важливо, як рядки розподілені між вузлами.</p>
+                            <p><strong>Distribution style:</strong></p>
+                            <ul>
+                            <li><strong>KEY</strong> — рядки з однаковим значенням ключа потрапляють на один вузол; join за цим ключем не потребує пересилання даних.</li>
+                            <li><strong>ALL</strong> — повна копія таблиці на кожному вузлі; для малих довідників.</li>
+                            <li><strong>EVEN</strong> — рівномірний розподіл по колу.</li>
+                            <li><strong>AUTO</strong> — Redshift обирає сам.</li>
+                            </ul>
+                            <p><strong>Sort keys</strong> визначають фізичний порядок даних на диску. Завдяки zone maps (min/max на блок) Redshift пропускає непотрібні блоки при фільтрації за діапазоном (наприклад, за датою).</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <button class="faq-question">
+                        116. Що таке Google BigQuery і як оптимізувати вартість запитів?
+                        <span class="toggle-icon">+</span>
+                    </button>
+                    <div class="faq-answer">
+                        <div class="answer-content">
+                            <p><strong>BigQuery</strong> — serverless колонкове сховище даних від Google Cloud. Інфраструктурою керувати не потрібно, у моделі on-demand оплата йде за обсяг <em>прочитаних</em> даних.</p>
+                            <p><strong>Як зменшити вартість:</strong></p>
+                            <ul>
+                            <li>Не використовувати <code>SELECT *</code> — вибирати лише потрібні колонки.</li>
+                            <li><strong>Партиціонувати</strong> таблиці (за датою) та фільтрувати за партицією.</li>
+                            <li><strong>Кластеризувати</strong> таблиці за колонками, які часто використовуються у фільтрах.</li>
+                            <li>Переглядати оцінку обсягу перед запуском (dry run) і ставити ліміти <code>maximum_bytes_billed</code>.</li>
+                            <li>Використовувати materialized views та кешування результатів.</li>
+                            <li>При стабільному навантаженні — перейти на capacity pricing (slots).</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <button class="faq-question">
+                        117. Що таке Amazon Kinesis і чим він відрізняється від Kafka?
+                        <span class="toggle-icon">+</span>
+                    </button>
+                    <div class="faq-answer">
+                        <div class="answer-content">
+                            <p><strong>Amazon Kinesis Data Streams</strong> — керований AWS-сервіс для потокової передачі даних. Аналог партиції Kafka тут — <strong>shard</strong>.</p>
+                            <ul>
+                            <li><strong>Керування:</strong> Kinesis повністю керований; Kafka потребує обслуговування кластера (або використання MSK / Confluent Cloud).</li>
+                            <li><strong>Масштабування:</strong> у Kinesis кожен shard має фіксовані ліміти (1 МБ/с на запис, 2 МБ/с на читання); Kafka гнучкіша та зазвичай дешевша на великих обсягах.</li>
+                            <li><strong>Retention:</strong> Kinesis — від 24 годин до 365 днів; Kafka — налаштовується довільно, включно з compacted topics.</li>
+                            <li><strong>Екосистема:</strong> Kafka має Kafka Connect, Kafka Streams, Schema Registry; Kinesis тісно інтегрований з Lambda, Firehose, Glue.</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <button class="faq-question">
+                        118. Що таке Apache Flink і чим він відрізняється від Spark Streaming?
+                        <span class="toggle-icon">+</span>
+                    </button>
+                    <div class="faq-answer">
+                        <div class="answer-content">
+                            <p><strong>Apache Flink</strong> — рушій для потокової обробки з підтримкою стану (stateful stream processing).</p>
+                            <ul>
+                            <li><strong>Модель:</strong> Flink обробляє кожну подію окремо (true streaming), а Spark Structured Streaming за замовчуванням працює мікро-пакетами.</li>
+                            <li><strong>Затримка:</strong> Flink дає мілісекунди, Spark — зазвичай сотні мілісекунд і більше.</li>
+                            <li><strong>Стан:</strong> Flink має розвинене керування станом (RocksDB state backend, checkpoints, savepoints) та гнучкі вікна з event time.</li>
+                            <li><strong>Batch:</strong> Spark сильніший у пакетній обробці та має ширшу екосистему (ML, SQL, Delta Lake).</li>
+                            </ul>
+                            <p>Вибір: Flink — для low-latency та складної stateful-логіки (фрод, CEP); Spark — коли потрібна єдина платформа для batch і streaming.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <button class="faq-question">
+                        119. Що таке event time, processing time та watermark у потоковій обробці?
+                        <span class="toggle-icon">+</span>
+                    </button>
+                    <div class="faq-answer">
+                        <div class="answer-content">
+                            <ul>
+                            <li><strong>Event time</strong> — час, коли подія фактично сталася (записаний у самій події).</li>
+                            <li><strong>Processing time</strong> — час, коли система обробила подію.</li>
+                            </ul>
+                            <p>Через мережеві затримки та офлайн-пристрої події приходять із запізненням і не в порядку, тому коректна аналітика будується на event time.</p>
+                            <p><strong>Watermark</strong> — це оцінка системи «всі події до часу T уже надійшли». Він визначає, коли можна закрити вікно та видати результат, і скільки часу тримати стан для запізнілих подій.</p>
+                            <pre><code>df.withWatermark("event_time", "10 minutes") \
+  .groupBy(window("event_time", "5 minutes")).count()</code></pre>
+                            <p>Події, що прийшли пізніше за watermark, відкидаються (або йдуть в окремий потік).</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <button class="faq-question">
+                        120. Які типи вікон існують у потоковій обробці (tumbling, sliding, session)?
+                        <span class="toggle-icon">+</span>
+                    </button>
+                    <div class="faq-answer">
+                        <div class="answer-content">
+                            <ul>
+                            <li><strong>Tumbling window</strong> — вікна фіксованого розміру, що не перетинаються. Наприклад, кількість подій за кожні 5 хвилин.</li>
+                            <li><strong>Sliding (hopping) window</strong> — вікна фіксованого розміру, що зсуваються з кроком, меншим за розмір, тому перетинаються. Наприклад, вікно 10 хвилин з кроком 1 хвилина — ковзне середнє.</li>
+                            <li><strong>Session window</strong> — вікно динамічної довжини, яке закривається після періоду неактивності (gap). Наприклад, сесія користувача на сайті закінчується після 30 хвилин без дій.</li>
+                            <li><strong>Global window</strong> — одне вікно на весь потік, закривається власним тригером.</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <button class="faq-question">
+                        121. Що таке Infrastructure as Code і які інструменти ви знаєте?
+                        <span class="toggle-icon">+</span>
+                    </button>
+                    <div class="faq-answer">
+                        <div class="answer-content">
+                            <p><strong>Infrastructure as Code (IaC)</strong> — підхід, коли інфраструктура (бакети, кластери, ролі, мережі) описується в коді та розгортається автоматично, а не вручну через консоль.</p>
+                            <ul>
+                            <li><strong>Переваги:</strong> відтворюваність середовищ (dev/stage/prod), історія змін у Git, code review, швидке відновлення після збою.</li>
+                            <li><strong>Terraform</strong> — декларативний, мультихмарний, зберігає стан у state-файлі; цикл <code>plan</code> → <code>apply</code>.</li>
+                            <li><strong>AWS CloudFormation / CDK</strong> — нативні для AWS; CDK дозволяє писати на Python/TypeScript.</li>
+                            <li><strong>Pulumi</strong> — IaC на звичайних мовах програмування.</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <button class="faq-question">
+                        122. Що таке sensors, catchup та backfill в Airflow?
+                        <span class="toggle-icon">+</span>
+                    </button>
+                    <div class="faq-answer">
+                        <div class="answer-content">
+                            <ul>
+                            <li><strong>Sensor</strong> — оператор, що чекає на умову: появу файлу в S3 (<code>S3KeySensor</code>), завершення іншого DAG (<code>ExternalTaskSensor</code>) тощо. Щоб не займати слот воркера, використовують <code>mode="reschedule"</code> або deferrable-оператори.</li>
+                            <li><strong>catchup</strong> — якщо <code>catchup=True</code>, Airflow після ввімкнення DAG запустить усі пропущені інтервали від <code>start_date</code> до поточної дати.</li>
+                            <li><strong>Backfill</strong> — ручний перезапуск DAG за історичний період (Airflow 3: <code>airflow backfill create --dag-id my_dag --from-date 2024-01-01 --to-date 2024-01-31</code>, також доступно з UI та API; в Airflow 2.x: <code>airflow dags backfill -s 2024-01-01 -e 2024-01-31 my_dag</code>).</li>
+                            </ul>
+                            <p>Щоб catchup та backfill працювали коректно, задачі мають бути ідемпотентними та використовувати логічну дату запуску (<code>data_interval_start</code>), а не поточний час.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <button class="faq-question">
+                        123. Що таке Data Vault і коли його використовують?
+                        <span class="toggle-icon">+</span>
+                    </button>
+                    <div class="faq-answer">
+                        <div class="answer-content">
+                            <p><strong>Data Vault</strong> — методологія моделювання сховища даних, орієнтована на гнучкість і повну історію змін.</p>
+                            <ul>
+                            <li><strong>Hubs</strong> — унікальні бізнес-ключі сутностей (клієнт, продукт).</li>
+                            <li><strong>Links</strong> — зв'язки між хабами (клієнт купив продукт).</li>
+                            <li><strong>Satellites</strong> — описові атрибути з історією змін (ім'я, адреса, ціна) та часом завантаження.</li>
+                            </ul>
+                            <p><strong>Переваги:</strong> легко додавати нові джерела без перебудови моделі, паралельне завантаження, повний аудит. <strong>Недоліки:</strong> багато таблиць і JOIN-ів, тому поверх Data Vault зазвичай будують вітрини у вигляді star schema для аналітиків.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <button class="faq-question">
+                        124. Чим відрізняються surrogate key та natural key?
+                        <span class="toggle-icon">+</span>
+                    </button>
+                    <div class="faq-answer">
+                        <div class="answer-content">
+                            <ul>
+                            <li><strong>Natural key</strong> — ключ з бізнес-змістом, що походить з джерела: email, ІПН, номер замовлення.</li>
+                            <li><strong>Surrogate key</strong> — штучний ключ без бізнес-змісту: автоінкремент, UUID або хеш.</li>
+                            </ul>
+                            <p><strong>Чому у сховищах даних використовують surrogate keys:</strong></p>
+                            <ul>
+                            <li>Natural key може змінитися або повторюватися між різними джерелами.</li>
+                            <li>Для SCD Type 2 один бізнес-об'єкт має кілька версій, і кожна потребує власного ключа.</li>
+                            <li>Числові ключі швидші в JOIN, ніж довгі рядки.</li>
+                            </ul>
+                            <p>У розподілених системах замість автоінкременту часто беруть хеш від natural key (<code>md5(source || id)</code>), щоб ключ можна було обчислити незалежно на кожному вузлі.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <button class="faq-question">
+                        125. Як читати план виконання запиту (EXPLAIN)?
+                        <span class="toggle-icon">+</span>
+                    </button>
+                    <div class="faq-answer">
+                        <div class="answer-content">
+                            <p><code>EXPLAIN</code> показує, як СУБД збирається виконати запит; <code>EXPLAIN ANALYZE</code> (PostgreSQL) реально виконує запит і показує фактичний час та кількість рядків.</p>
+                            <p><strong>На що звертати увагу:</strong></p>
+                            <ul>
+                            <li><strong>Seq Scan</strong> на великій таблиці там, де очікувався <strong>Index Scan</strong>.</li>
+                            <li>Тип join: <strong>Nested Loop</strong> (добре для малих наборів), <strong>Hash Join</strong>, <strong>Merge Join</strong>.</li>
+                            <li>Велика різниця між оціночною (<code>rows</code>) та фактичною кількістю рядків — ознака застарілої статистики (потрібен <code>ANALYZE</code>).</li>
+                            <li>Сортування на диску (external sort) — не вистачає <code>work_mem</code>.</li>
+                            </ul>
+                            <p>У Spark аналог — <code>df.explain("formatted")</code> та вкладка SQL у Spark UI.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <button class="faq-question">
+                        126. Що таке GIL у Python і як обирати між threading, multiprocessing та asyncio?
+                        <span class="toggle-icon">+</span>
+                    </button>
+                    <div class="faq-answer">
+                        <div class="answer-content">
+                            <p><strong>GIL (Global Interpreter Lock)</strong> — глобальне блокування в CPython, через яке в один момент часу лише один потік виконує Python-байткод.</p>
+                            <ul>
+                            <li><strong>threading</strong> — ефективний для I/O-задач (мережа, диск), бо під час очікування I/O GIL звільняється. Для CPU-задач прискорення не дає.</li>
+                            <li><strong>multiprocessing</strong> — окремі процеси зі своїм інтерпретатором і GIL; підходить для CPU-задач, але має накладні витрати на запуск процесів і передачу даних.</li>
+                            <li><strong>asyncio</strong> — один потік, кооперативна багатозадачність; ідеальний для тисяч одночасних мережевих запитів (наприклад, збір даних з API).</li>
+                            </ul>
+                            <p>Бібліотеки на C (NumPy, Pandas) часто звільняють GIL під час обчислень. У Python 3.13 з'явилася експериментальна збірка без GIL (free-threaded), а з Python 3.14 (PEP 779) вона офіційно підтримується, хоча поки що не є збіркою за замовчуванням.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <button class="faq-question">
+                        127. Як працює керування пам'яттю та garbage collector у Python?
+                        <span class="toggle-icon">+</span>
+                    </button>
+                    <div class="faq-answer">
+                        <div class="answer-content">
+                            <ul>
+                            <li><strong>Reference counting:</strong> кожен об'єкт має лічильник посилань; коли він стає 0, пам'ять звільняється одразу.</li>
+                            <li><strong>Generational GC:</strong> додатковий збирач сміття знаходить циклічні посилання (об'єкти, що посилаються один на одного). Об'єкти поділені на три покоління; молоді перевіряються частіше.</li>
+                            <li>Модуль <code>gc</code> дозволяє керувати збирачем, <code>sys.getrefcount()</code> — дізнатися кількість посилань.</li>
+                            </ul>
+                            <p><strong>Практичні поради для обробки даних:</strong> використовувати генератори замість списків для великих потоків, <code>__slots__</code> для мільйонів дрібних об'єктів, обробку файлів частинами (<code>chunksize</code> у Pandas), профілювання через <code>tracemalloc</code>.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <button class="faq-question">
+                        128. Що таке IAM в AWS і принцип найменших привілеїв?
+                        <span class="toggle-icon">+</span>
+                    </button>
+                    <div class="faq-answer">
+                        <div class="answer-content">
+                            <p><strong>IAM (Identity and Access Management)</strong> — сервіс AWS для керування доступом.</p>
+                            <ul>
+                            <li><strong>Users</strong> — облікові записи для людей; <strong>Groups</strong> — набори користувачів.</li>
+                            <li><strong>Roles</strong> — тимчасові права, які приймають сервіси (EC2, Lambda, Glue) або інші облікові записи. Для застосунків використовують ролі, а не статичні ключі доступу.</li>
+                            <li><strong>Policies</strong> — JSON-документи, що дозволяють чи забороняють дії (<code>Action</code>) над ресурсами (<code>Resource</code>).</li>
+                            </ul>
+                            <p><strong>Принцип найменших привілеїв (least privilege):</strong> видавати лише ті права, які реально потрібні. Наприклад, Glue Job отримує доступ <code>s3:GetObject</code> лише до конкретного префікса, а не <code>s3:*</code> до всіх бакетів.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <button class="faq-question">
+                        129. Що таке Schema Registry у Kafka і навіщо він потрібен?
+                        <span class="toggle-icon">+</span>
+                    </button>
+                    <div class="faq-answer">
+                        <div class="answer-content">
+                            <p><strong>Schema Registry</strong> — сервіс, що централізовано зберігає схеми повідомлень (Avro, Protobuf, JSON Schema) та їхні версії.</p>
+                            <ul>
+                            <li>Продюсер реєструє схему й надсилає в повідомленні лише її ID, а не всю схему, що економить місце.</li>
+                            <li>Консюмер за ID отримує схему й коректно десеріалізує дані.</li>
+                            <li>Registry перевіряє <strong>сумісність</strong> нових версій: <code>BACKWARD</code>, <code>FORWARD</code>, <code>FULL</code>. Несумісну зміну (наприклад, видалення обов'язкового поля) буде відхилено.</li>
+                            </ul>
+                            <p>Так Schema Registry стає контрактом між командами-продюсерами та споживачами даних.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <button class="faq-question">
+                        130. Які кодеки стиснення використовуються в Big Data і що таке splittable формат?
+                        <span class="toggle-icon">+</span>
+                    </button>
+                    <div class="faq-answer">
+                        <div class="answer-content">
+                            <ul>
+                            <li><strong>Snappy</strong> — дуже швидкий, помірне стиснення; стандарт для Parquet/ORC.</li>
+                            <li><strong>ZSTD</strong> — гарний баланс швидкості та ступеня стиснення; все частіше замінює Snappy.</li>
+                            <li><strong>Gzip</strong> — високе стиснення, але повільний.</li>
+                            <li><strong>LZ4</strong> — найшвидший, використовується в Kafka та ClickHouse.</li>
+                            <li><strong>Bzip2</strong> — дуже сильне, але дуже повільне стиснення. Єдиний поширений кодек, який <em>сам по собі splittable</em>: великий <code>.bz2</code> файл Hadoop/Spark можуть читати паралельно.</li>
+                            </ul>
+                            <p><strong>Splittable</strong> означає, що файл можна розділити на частини й обробляти паралельно. Великий <code>.csv.gz</code> (так само як цілий файл, стиснутий Snappy чи LZ4) не splittable — його прочитає лише одна задача. Parquet, ORC та Avro splittable незалежно від кодека, бо стискають дані блоками всередині файлу.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <button class="faq-question">
+                        131. Що таке проблема малих файлів (small files problem) і як її вирішувати?
+                        <span class="toggle-icon">+</span>
+                    </button>
+                    <div class="faq-answer">
+                        <div class="answer-content">
+                            <p>Коли таблиця складається з тисяч чи мільйонів дрібних файлів (кілобайти замість сотень мегабайт), виникають проблеми:</p>
+                            <ul>
+                            <li>Навантаження на NameNode в HDFS (метадані кожного файлу в пам'яті).</li>
+                            <li>Повільні операції <code>LIST</code> в S3 та накладні витрати на відкриття кожного файлу.</li>
+                            <li>Тисячі дрібних задач у Spark.</li>
+                            </ul>
+                            <p><strong>Причини:</strong> streaming з частими мікро-пакетами, надмірне партиціонування, забагато shuffle-партицій при записі.</p>
+                            <p><strong>Рішення:</strong> <code>coalesce</code>/<code>repartition</code> перед записом, регулярна компактизація (<code>OPTIMIZE</code> у Delta Lake, <code>rewrite_data_files</code> в Iceberg), менш дрібна схема партицій, AQE, налаштування <code>maxRecordsPerFile</code>. Цільовий розмір файлу — 128 МБ–1 ГБ.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <button class="faq-question">
+                        132. Що таке Trino (Presto) і коли його використовувати?
+                        <span class="toggle-icon">+</span>
+                    </button>
+                    <div class="faq-answer">
+                        <div class="answer-content">
+                            <p><strong>Trino</strong> (раніше PrestoSQL) — розподілений SQL-рушій для інтерактивних запитів, який сам не зберігає дані, а читає їх із зовнішніх джерел через <strong>конектори</strong>.</p>
+                            <ul>
+                            <li>Архітектура: <strong>Coordinator</strong> планує запит, <strong>Workers</strong> виконують його в пам'яті, конвеєрно, без запису проміжних результатів на диск.</li>
+                            <li><strong>Federated queries:</strong> один запит може з'єднати таблицю з S3 (Hive/Iceberg) з таблицею в PostgreSQL чи Kafka.</li>
+                            <li>Amazon Athena побудована на Presto/Trino.</li>
+                            </ul>
+                            <p><strong>Коли використовувати:</strong> ad-hoc аналітика над Data Lake, BI-запити з низькою затримкою. Для довгих важких ETL-задач надійніший Spark, бо Trino за замовчуванням не відновлює задачі після падіння вузла (хоча є режим fault-tolerant execution).</p>
+                        </div>
+                    </div>
+                </div>
             </div>
 
             <!-- Senior Питання -->
@@ -3348,6 +4112,573 @@ print(add_numbers(10))</code></pre>
                             <p><strong>Blue-Green Deployment</strong> — це стратегія випуску нових версій без жодного даунтайму (Zero Downtime).</p>
                             <p>У вас існують два абсолютно ідентичні виробничі середовища. <em>Blue</em> (Синє) — поточне живе середовище, туди йде весь трафік користувачів. Ви деплоїте нову версію коду в <em>Green</em> (Зелене) середовище, яке поки що ніхто не бачить. Після внутрішнього тестування, ви миттєво перемикаєте балансувальник навантаження (Load Balancer) з Blue на Green.</p>
                             <p>Якщо в Green виявилася критична помилка — ви так само в один клік повертаєте балансувальник назад на Blue.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <button class="faq-question">
+                        27. Що таке Kappa-архітектура і чим вона відрізняється від Lambda?
+                        <span class="toggle-icon">+</span>
+                    </button>
+                    <div class="faq-answer">
+                        <div class="answer-content">
+                            <ul>
+                            <li><strong>Kappa-архітектура</strong> (Jay Kreps, 2014) прибирає batch layer Lambda-архітектури (шари Lambda описані в Senior-питанні 2) і залишає <em>лише потоковий шар</em>.</li>
+                            <li>Джерело істини — незмінний журнал подій (Kafka з довгим retention або tiered storage).</li>
+                            <li><strong>Перерахунок історії:</strong> запускається нова версія streaming job-а, яка читає журнал з початку й пише в нову таблицю; коли вона наздогнала потік, споживачів перемикають на неї, а стару версію вимикають.</li>
+                            <li><strong>Головна перевага над Lambda:</strong> одна кодова база замість двох (batch і speed), які треба тримати синхронними.</li>
+                            <li><strong>Недоліки:</strong> дорого зберігати й переграти роки подій; складні історичні перерахунки та join-и з великими довідниками в потоці робити важче, ніж у batch.</li>
+                            </ul>
+                            <p><strong>Вибір:</strong> Kappa простіша в підтримці, якщо логіку можна виразити потоково і є можливість зберігати історію подій. Lambda (або сучасний варіант — Lakehouse з єдиним кодом для batch і streaming) доречна, коли потрібні складні історичні перерахунки та дешеве зберігання.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <button class="faq-question">
+                        28. Що таке Data Mesh і які його основні принципи?
+                        <span class="toggle-icon">+</span>
+                    </button>
+                    <div class="faq-answer">
+                        <div class="answer-content">
+                            <p><strong>Data Mesh</strong> — організаційно-архітектурний підхід, що децентралізує відповідальність за дані від центральної дата-команди до доменних команд.</p>
+                            <ul>
+                            <li><strong>Domain ownership:</strong> кожен бізнес-домен (продажі, логістика) володіє своїми даними та відповідає за них.</li>
+                            <li><strong>Data as a product:</strong> дані публікуються як продукт з SLA, документацією, якістю та власником.</li>
+                            <li><strong>Self-serve data platform:</strong> центральна платформна команда дає інструменти (зберігання, оркестрація, каталог), щоб домени могли самостійно створювати дата-продукти.</li>
+                            <li><strong>Federated computational governance:</strong> спільні стандарти (безпека, формати, ідентифікатори) задаються централізовано та автоматизуються.</li>
+                            </ul>
+                            <p>Data Mesh доречний у великих організаціях, де центральна команда стала вузьким місцем. Для невеликих компаній він часто зайвий.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <button class="faq-question">
+                        29. Що таке Data Contracts і як їх впроваджувати?
+                        <span class="toggle-icon">+</span>
+                    </button>
+                    <div class="faq-answer">
+                        <div class="answer-content">
+                            <p><strong>Data Contract</strong> — формальна домовленість між продюсером даних (наприклад, командою бекенду) та споживачами (дата-командою) про структуру та якість даних.</p>
+                            <p><strong>Що містить контракт:</strong> схему й типи полів, семантику, обов'язковість, правила якості (діапазони, унікальність), SLA свіжості, власника та політику змін.</p>
+                            <p><strong>Як впроваджувати:</strong></p>
+                            <ul>
+                            <li>Описувати контракт у коді (YAML, Protobuf, JSON Schema) та зберігати в Git поруч з кодом продюсера.</li>
+                            <li>Перевіряти сумісність у CI продюсера, щоб ламаючі зміни блокувалися ще до релізу.</li>
+                            <li>Використовувати Schema Registry з режимом сумісності для потокових даних.</li>
+                            <li>Ламаючі зміни робити через нову версію з періодом підтримки обох версій.</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <button class="faq-question">
+                        30. Як би ви спроєктували платформу даних з нуля?
+                        <span class="toggle-icon">+</span>
+                    </button>
+                    <div class="faq-answer">
+                        <div class="answer-content">
+                            <p>Починаю з вимог, а не з інструментів:</p>
+                            <ul>
+                            <li><strong>Бізнес-вимоги:</strong> хто споживачі (BI, ML, продукт), які потрібні затримки (добова звітність чи real-time), обсяги та ріст даних, бюджет, регуляторні обмеження (GDPR).</li>
+                            <li><strong>Ingestion:</strong> batch (Fivetran/Airbyte, власні job-и), CDC (Debezium), стрімінг (Kafka/Kinesis).</li>
+                            <li><strong>Storage:</strong> Lakehouse (S3 + Iceberg/Delta) або хмарне сховище (Snowflake/BigQuery); медальйонна архітектура bronze/silver/gold.</li>
+                            <li><strong>Processing:</strong> Spark для важких задач, dbt для SQL-трансформацій, Flink для потокових.</li>
+                            <li><strong>Orchestration:</strong> Airflow / Dagster.</li>
+                            <li><strong>Наскрізні аспекти:</strong> data catalog та lineage, якість даних, безпека та доступи, моніторинг, IaC, CI/CD, контроль вартості.</li>
+                            </ul>
+                            <p>Головні принципи: починати з простого керованого рішення, обирати відкриті формати, щоб уникнути vendor lock-in, і закладати ідемпотентність та можливість перерахунку з першого дня.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <button class="faq-question">
+                        31. Як досягається exactly-once у Kafka?
+                        <span class="toggle-icon">+</span>
+                    </button>
+                    <div class="faq-answer">
+                        <div class="answer-content">
+                            <p>Kafka забезпечує exactly-once semantics (EOS) для сценарію «прочитати з Kafka — обробити — записати в Kafka» за допомогою двох механізмів:</p>
+                            <ul>
+                            <li><strong>Idempotent producer</strong> (<code>enable.idempotence=true</code>): кожне повідомлення має producer ID та sequence number, тому брокер відкидає дублікати при повторних відправках.</li>
+                            <li><strong>Transactions</strong> (<code>transactional.id</code>): продюсер атомарно записує повідомлення в кілька партицій <em>разом із</em> комітом offsets консюмера. Або все застосовується, або нічого.</li>
+                            <li>Консюмери з <code>isolation.level=read_committed</code> бачать лише закомічені транзакції.</li>
+                            </ul>
+                            <p><strong>Важливо:</strong> якщо результат пишеться у зовнішню систему (БД, S3), EOS Kafka не діє. Тоді потрібен ідемпотентний sink (upsert за ключем) або двофазний коміт (у Flink — Sink V2 API з mixin-інтерфейсом <code>SupportsCommitter</code>; старі <code>TwoPhaseCommitSinkFunction</code> та <code>TwoPhaseCommittingSink</code> застаріли й прибрані у Flink 2.0).</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <button class="faq-question">
+                        32. Як працює transaction log у Delta Lake і що дає Time Travel?
+                        <span class="toggle-icon">+</span>
+                    </button>
+                    <div class="faq-answer">
+                        <div class="answer-content">
+                            <p>Delta Lake зберігає дані в Parquet-файлах, а всі зміни таблиці фіксує в <strong>transaction log</strong> — директорії <code>_delta_log/</code> з JSON-файлами комітів (і періодичними Parquet-checkpoint-ами).</p>
+                            <ul>
+                            <li>Кожен коміт описує, які файли додано та видалено. Поточний стан таблиці — це результат програвання логу.</li>
+                            <li><strong>ACID</strong> досягається через <strong>optimistic concurrency control</strong>: writer перевіряє, чи не з'явилися конфліктні коміти, і атомарно записує наступний номер версії. При конфлікті операція повторюється або завершується помилкою.</li>
+                            <li><strong>Time Travel:</strong> можна прочитати таблицю на певну версію чи момент часу (<code>VERSION AS OF 42</code>, <code>TIMESTAMP AS OF '2024-01-01'</code>) — для аудиту, відтворення ML-експериментів, відкату помилкового запису.</li>
+                            <li><code>VACUUM</code> видаляє старі файли, після чого Time Travel на ці версії недоступний.</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <button class="faq-question">
+                        33. Чим Apache Iceberg кращий за класичні Hive-таблиці?
+                        <span class="toggle-icon">+</span>
+                    </button>
+                    <div class="faq-answer">
+                        <div class="answer-content">
+                            <ul>
+                            <li><strong>Метадані на рівні файлів:</strong> Iceberg зберігає список файлів у manifest-файлах, тому не потрібно робити повільний <code>LIST</code> директорій в S3.</li>
+                            <li><strong>Hidden partitioning:</strong> партиціонування задається трансформацією (<code>days(ts)</code>, <code>bucket(16, id)</code>), і користувачу не треба знати про окрему колонку партиції — фільтр <code>WHERE ts &gt; ...</code> автоматично відсікає партиції.</li>
+                            <li><strong>Partition evolution:</strong> схему партиціонування можна змінити без перезапису старих даних.</li>
+                            <li><strong>Snapshots та ACID:</strong> атомарні коміти, ізоляція читачів, time travel та rollback.</li>
+                            <li><strong>Schema evolution:</strong> колонки відстежуються за ID, тому перейменування та зміна порядку безпечні.</li>
+                            <li><strong>Відкритість:</strong> підтримується Spark, Flink, Trino, Snowflake, BigQuery, Athena.</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <button class="faq-question">
+                        34. Що таке data skipping, Z-ordering та liquid clustering?
+                        <span class="toggle-icon">+</span>
+                    </button>
+                    <div class="faq-answer">
+                        <div class="answer-content">
+                            <ul>
+                            <li><strong>Data skipping:</strong> табличні формати зберігають min/max статистику колонок для кожного файлу. Якщо фільтр запиту не потрапляє в діапазон файлу, файл не читається.</li>
+                            <li><strong>Z-ordering:</strong> сортування даних одночасно за кількома колонками за кривою Z-порядку, щоб близькі значення кількох колонок опинялися в одних файлах. Підвищує ефективність data skipping для фільтрів за будь-якою з цих колонок. У Delta: <code>OPTIMIZE t ZORDER BY (user_id, country)</code>.</li>
+                            <li><strong>Liquid clustering</strong> (Delta Lake): заміна партиціонування та Z-order. Ключі кластеризації можна змінювати без перезапису всієї таблиці, а кластеризація застосовується інкрементально.</li>
+                            </ul>
+                            <p>Ефективно для колонок з високою кардинальністю, які часто використовуються у фільтрах, але не підходять для партиціонування.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <button class="faq-question">
+                        35. Які техніки боротьби з data skew у Spark ви знаєте?
+                        <span class="toggle-icon">+</span>
+                    </button>
+                    <div class="faq-answer">
+                        <div class="answer-content">
+                            <ul>
+                            <li><strong>Що це таке</strong> — див. Senior-питання 8 «Що таке data spill та data skew у Spark?»; тут зібрані практичні техніки.</li>
+                            <li><strong>Діагностика:</strong> у Spark UI одна-дві задачі працюють у рази довше за медіану; у даних є «гарячі» ключі (NULL, тестовий акаунт, популярний товар).</li>
+                            <li><strong>AQE skew join:</strong> <code>spark.sql.adaptive.skewJoin.enabled=true</code> автоматично ділить перекошені партиції.</li>
+                            <li><strong>Broadcast join:</strong> якщо одна зі сторін мала, shuffle не потрібен взагалі.</li>
+                            <li><strong>Salting:</strong> до гарячого ключа додається випадковий суфікс (0..N), а другу таблицю дублюють N разів з усіма суфіксами. Навантаження розподіляється на N задач.</li>
+                            <li><strong>Окрема обробка гарячих ключів:</strong> гарячі ключі обробляються окремим broadcast join, решта — звичайним, результати об'єднуються.</li>
+                            <li><strong>Двоетапна агрегація:</strong> спочатку агрегація за (ключ, сіль), потім за ключем.</li>
+                            <li>Відфільтрувати NULL-ключі до join, якщо вони не потрібні.</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <button class="faq-question">
+                        36. Як оптимізувати вартість хмарної платформи даних (FinOps)?
+                        <span class="toggle-icon">+</span>
+                    </button>
+                    <div class="faq-answer">
+                        <div class="answer-content">
+                            <ul>
+                            <li><strong>Видимість:</strong> теги на всіх ресурсах (команда, проєкт, пайплайн), дашборди витрат, бюджети та алерти.</li>
+                            <li><strong>Compute:</strong> spot/preemptible інстанси для batch, автомасштабування та автозупинка кластерів і warehouse-ів, правильний розмір (right-sizing) за реальним навантаженням, reserved instances / savings plans для стабільного навантаження.</li>
+                            <li><strong>Storage:</strong> lifecycle-політики (S3 Standard → Infrequent Access → Glacier), видалення непотрібних копій і старих версій (<code>VACUUM</code>), стиснення та колонкові формати.</li>
+                            <li><strong>Запити:</strong> партиціонування та кластеризація, щоб читати менше даних; інкрементальна обробка замість повного перерахунку; моніторинг найдорожчих запитів.</li>
+                            <li><strong>Мережа:</strong> уникати передачі даних між регіонами та з хмари (egress).</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <button class="faq-question">
+                        37. Як організувати Disaster Recovery для платформи даних (RPO/RTO)?
+                        <span class="toggle-icon">+</span>
+                    </button>
+                    <div class="faq-answer">
+                        <div class="answer-content">
+                            <ul>
+                            <li><strong>RPO (Recovery Point Objective)</strong> — скільки даних допустимо втратити (наприклад, не більше 1 години).</li>
+                            <li><strong>RTO (Recovery Time Objective)</strong> — за який час система має відновитися.</li>
+                            </ul>
+                            <p><strong>Практики:</strong></p>
+                            <ul>
+                            <li>Реплікація сховища в інший регіон (S3 Cross-Region Replication, геореплікація у Snowflake/BigQuery).</li>
+                            <li>Резервні копії метаданих (каталог, Hive Metastore, стан Airflow) — без них дані в Data Lake втрачають сенс.</li>
+                            <li>Kafka: MirrorMaker 2 / Cluster Linking в резервний кластер.</li>
+                            <li>Уся інфраструктура описана в IaC, щоб швидко підняти її в іншому регіоні.</li>
+                            <li>Незмінні сирі дані (bronze) дозволяють перерахувати все інше.</li>
+                            <li>Регулярні DR-навчання — непротестований план відновлення не працює.</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <button class="faq-question">
+                        38. Що таке data observability і які її ключові складові?
+                        <span class="toggle-icon">+</span>
+                    </button>
+                    <div class="faq-answer">
+                        <div class="answer-content">
+                            <p><strong>Data observability</strong> — здатність розуміти стан даних у системі та швидко знаходити причини проблем, аналогічно до observability в DevOps.</p>
+                            <p><strong>П'ять основних складових:</strong></p>
+                            <ul>
+                            <li><strong>Freshness:</strong> чи оновилися дані вчасно.</li>
+                            <li><strong>Volume:</strong> чи кількість рядків в очікуваних межах (раптове падіння на 90% — тривожний сигнал).</li>
+                            <li><strong>Schema:</strong> чи не змінилася структура (нова чи видалена колонка, зміна типу).</li>
+                            <li><strong>Distribution:</strong> чи значення в нормі (частка NULL, діапазони, аномалії).</li>
+                            <li><strong>Lineage:</strong> звідки прийшли дані та кого зачепить проблема.</li>
+                            </ul>
+                            <p>Інструменти: Monte Carlo, Elementary (для dbt), Great Expectations, Soda, OpenLineage + Marquez.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <button class="faq-question">
+                        39. Як реалізувати GDPR «право на забуття» в Data Lake?
+                        <span class="toggle-icon">+</span>
+                    </button>
+                    <div class="faq-answer">
+                        <div class="answer-content">
+                            <p>Проблема: дані в Data Lake зберігаються в незмінних файлах, а персональні дані користувача можуть бути розкидані по тисячах файлів і копіях.</p>
+                            <ul>
+                            <li><strong>Табличні формати з DELETE:</strong> Delta Lake, Iceberg, Hudi дозволяють виконати <code>DELETE WHERE user_id = ...</code>. Після цього обов'язково потрібен <code>VACUUM</code>/expire snapshots, інакше дані лишаються доступні через time travel.</li>
+                            <li><strong>Crypto-shredding:</strong> персональні дані шифруються окремим ключем для кожного користувача. Для видалення достатньо знищити ключ — дані у всіх копіях і бекапах стають нечитабельними.</li>
+                            <li><strong>Псевдонімізація:</strong> PII зберігається в одній таблиці-сейфі, а решта систем використовує лише токен. Видалення зводиться до видалення рядка з сейфу.</li>
+                            <li>Каталог з тегами PII та lineage, щоб знати, де саме лежать персональні дані.</li>
+                            <li>Автоматизований процес обробки запитів і журнал виконаних видалень для аудиту.</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <button class="faq-question">
+                        40. Як організувати шифрування та керування ключами для даних?
+                        <span class="toggle-icon">+</span>
+                    </button>
+                    <div class="faq-answer">
+                        <div class="answer-content">
+                            <ul>
+                            <li><strong>Encryption at rest:</strong> шифрування даних на дисках та в об'єктному сховищі (S3 SSE-KMS, шифрування в Snowflake/BigQuery за замовчуванням).</li>
+                            <li><strong>Encryption in transit:</strong> TLS для всіх з'єднань (Kafka, JDBC, API).</li>
+                            <li><strong>KMS (Key Management Service):</strong> ключі зберігаються в AWS KMS / GCP KMS / HashiCorp Vault, доступ до них контролюється IAM та логується.</li>
+                            <li><strong>Envelope encryption:</strong> дані шифруються data key, а сам data key — master-ключем у KMS.</li>
+                            <li><strong>Ротація ключів</strong> за розкладом, окремі ключі для різних середовищ і рівнів чутливості даних.</li>
+                            <li><strong>Column-level encryption / tokenization</strong> для найбільш чутливих полів (номери карток, паспорти).</li>
+                            </ul>
+                            <p>Секрети (паролі до БД, API-ключі) ніколи не зберігаються в коді — лише в Secrets Manager / Vault.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <button class="faq-question">
+                        41. Як виконати backfill великого обсягу історичних даних, не зашкодивши production?
+                        <span class="toggle-icon">+</span>
+                    </button>
+                    <div class="faq-answer">
+                        <div class="answer-content">
+                            <ul>
+                            <li><strong>Ідемпотентність:</strong> job за певний період має перезаписувати свою партицію (<code>INSERT OVERWRITE</code> / <code>replaceWhere</code>), щоб повторний запуск не створював дублікатів.</li>
+                            <li><strong>Розбиття на частини:</strong> обробка по днях чи тижнях, а не одним гігантським запуском; обмеження паралелізму (<code>max_active_runs</code> в Airflow).</li>
+                            <li><strong>Ізоляція ресурсів:</strong> окремий кластер чи warehouse, черга з нижчим пріоритетом, запуск у неробочі години.</li>
+                            <li><strong>Запис у тіньову таблицю:</strong> заповнити нову таблицю, перевірити її (порівняння кількості рядків, контрольних сум, data diff) і лише потім атомарно переключити.</li>
+                            <li><strong>Комунікація:</strong> попередити споживачів, оцінити вартість заздалегідь, мати план відкату.</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <button class="faq-question">
+                        42. Як обробляти дані, що надходять із запізненням (late-arriving data)?
+                        <span class="toggle-icon">+</span>
+                    </button>
+                    <div class="faq-answer">
+                        <div class="answer-content">
+                            <p><strong>Late-arriving facts</strong> — факти, які надходять після того, як період уже оброблено (наприклад, мобільний застосунок надіслав події через три дні).</p>
+                            <ul>
+                            <li>Партиціонувати за датою <em>події</em>, а обробляти за датою <em>надходження</em> та перераховувати зачеплені партиції.</li>
+                            <li>Вікно перерахунку (lookback): кожен запуск переобробляє останні N днів.</li>
+                            <li>У streaming — watermark з допустимою затримкою, а дуже пізні події направляти в окремий потік для пакетного виправлення.</li>
+                            </ul>
+                            <p><strong>Late-arriving dimensions</strong> — факт надійшов раніше за відповідний запис у вимірі. Рішення: створити «inferred member» (запис-заглушку з бізнес-ключем), а коли дані виміру надійдуть — оновити його.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <button class="faq-question">
+                        43. Як забезпечити сумісність при еволюції схем даних?
+                        <span class="toggle-icon">+</span>
+                    </button>
+                    <div class="faq-answer">
+                        <div class="answer-content">
+                            <ul>
+                            <li><strong>Backward compatibility:</strong> новий код може читати старі дані. Наприклад, додане поле має значення за замовчуванням.</li>
+                            <li><strong>Forward compatibility:</strong> старий код може читати нові дані, ігноруючи невідомі поля.</li>
+                            <li><strong>Full compatibility:</strong> обидва варіанти одночасно.</li>
+                            </ul>
+                            <p><strong>Безпечні зміни:</strong> додавання необов'язкового поля, розширення типу (int → long). <strong>Небезпечні:</strong> видалення чи перейменування поля, зміна типу, зміна семантики.</p>
+                            <p><strong>Практики:</strong> Schema Registry з контролем сумісності, перевірка схем у CI, стратегія expand → migrate → contract (спочатку додати нове поле, перевести споживачів, потім видалити старе), версіонування топіків і таблиць (<code>orders_v2</code>) для ламаючих змін.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <button class="faq-question">
+                        44. Як побудувати стратегію тестування для платформи даних?
+                        <span class="toggle-icon">+</span>
+                    </button>
+                    <div class="faq-answer">
+                        <div class="answer-content">
+                            <ul>
+                            <li><strong>Unit-тести</strong> трансформацій на маленьких фікстурах (pytest + локальний SparkSession, <code>chispa</code> для порівняння DataFrame).</li>
+                            <li><strong>Integration-тести</strong> з реальними залежностями в контейнерах (Testcontainers для Kafka, PostgreSQL).</li>
+                            <li><strong>Data quality тести</strong> на реальних даних у кожному запуску (dbt tests, Great Expectations, Soda): unique, not_null, referential integrity, діапазони.</li>
+                            <li><strong>Data diff / regression:</strong> порівняння результату нової версії пайплайну з production на тих самих вхідних даних перед релізом.</li>
+                            <li><strong>Contract-тести</strong> на схеми між продюсерами та споживачами.</li>
+                            <li><strong>Окремі середовища</strong> dev/staging з анонімізованою копією чи вибіркою production-даних (Zero-Copy Clone у Snowflake, гілки в lakeFS/Nessie).</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <button class="faq-question">
+                        45. Що таке consistent hashing і як працює шардування в розподілених базах?
+                        <span class="toggle-icon">+</span>
+                    </button>
+                    <div class="faq-answer">
+                        <div class="answer-content">
+                            <p><strong>Шардування</strong> — горизонтальний поділ даних між вузлами за ключем.</p>
+                            <ul>
+                            <li><strong>Наївний підхід</strong> <code>hash(key) % N</code> погано масштабується: при зміні N майже всі ключі переїжджають на інші вузли.</li>
+                            <li><strong>Consistent hashing:</strong> вузли та ключі розміщуються на «кільці» хешів; ключ належить найближчому вузлу за годинниковою стрілкою. При додаванні чи видаленні вузла переміщується лише ~1/N ключів.</li>
+                            <li><strong>Virtual nodes:</strong> кожен фізичний вузол займає багато позицій на кільці, що вирівнює навантаження.</li>
+                            </ul>
+                            <p>Використовується в Cassandra, DynamoDB, Riak. Альтернатива — range-шардування (HBase, CockroachDB), яке краще для діапазонних запитів, але схильне до гарячих точок при монотонних ключах.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <button class="faq-question">
+                        46. Що таке алгоритми консенсусу (Raft, Paxos) і навіщо Kafka перейшла з ZooKeeper на KRaft?
+                        <span class="toggle-icon">+</span>
+                    </button>
+                    <div class="faq-answer">
+                        <div class="answer-content">
+                            <p><strong>Консенсус</strong> дозволяє кільком вузлам розподіленої системи погодитися щодо спільного стану (хто лідер, яка остання конфігурація) навіть при збоях частини вузлів. Рішення приймається більшістю (кворумом), тому кластер з 2f+1 вузлів витримує f відмов.</p>
+                            <ul>
+                            <li><strong>Paxos</strong> — класичний, але складний для розуміння та реалізації.</li>
+                            <li><strong>Raft</strong> — простіший: вибір лідера, реплікація журналу лідером, terms для виявлення застарілих лідерів. Використовується в etcd, Consul, CockroachDB.</li>
+                            </ul>
+                            <p><strong>KRaft:</strong> раніше Kafka зберігала метадані в окремому кластері ZooKeeper. KRaft (Kafka Raft) перенесла метадані в саму Kafka. Результат: одна система замість двох, швидше відновлення контролера, підтримка мільйонів партицій. З Kafka 4.0 ZooKeeper повністю прибрано.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <button class="faq-question">
+                        47. Як обирати між batch, micro-batch та streaming обробкою?
+                        <span class="toggle-icon">+</span>
+                    </button>
+                    <div class="faq-answer">
+                        <div class="answer-content">
+                            <ul>
+                            <li><strong>Batch</strong> (години/доба): найпростіший і найдешевший, легко перераховувати історію. Підходить для звітності, ML-тренування, фінансових закриттів.</li>
+                            <li><strong>Micro-batch</strong> (секунди–хвилини): Spark Structured Streaming, інкрементальні моделі. Компроміс між затримкою та складністю.</li>
+                            <li><strong>Streaming</strong> (мілісекунди): Flink, Kafka Streams. Потрібен для фрод-детекції, персоналізації в реальному часі, алертів. Найскладніший в експлуатації: стан, порядок подій, exactly-once.</li>
+                            </ul>
+                            <p><strong>Ключове питання до бізнесу:</strong> яка реальна цінність від зменшення затримки? Часто «real-time» означає «раз на 15 хвилин», і micro-batch покриває потребу за значно меншу ціну. Варто також думати про загальний код для обох режимів (Spark, Flink, Beam), щоб не дублювати логіку.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <button class="faq-question">
+                        48. Що таке Feature Store і яка роль дата-інженера в ML-платформі?
+                        <span class="toggle-icon">+</span>
+                    </button>
+                    <div class="faq-answer">
+                        <div class="answer-content">
+                            <p><strong>Feature Store</strong> — централізоване сховище ознак (features) для машинного навчання (Feast, Tecton, Databricks Feature Store, SageMaker Feature Store).</p>
+                            <ul>
+                            <li><strong>Offline store</strong> (Data Lake / сховище) — історичні ознаки для навчання моделей.</li>
+                            <li><strong>Online store</strong> (Redis, DynamoDB) — актуальні ознаки з низькою затримкою для інференсу.</li>
+                            <li><strong>Point-in-time correctness:</strong> при формуванні навчального датасету беруться значення ознак станом на момент події, щоб уникнути витоку даних з майбутнього (data leakage).</li>
+                            <li>Усуває <strong>training-serving skew</strong>: одна й та сама логіка обчислення ознак для навчання та інференсу.</li>
+                            </ul>
+                            <p>Роль дата-інженера: пайплайни обчислення ознак (batch і streaming), якість та свіжість даних, версіонування датасетів, моніторинг дрейфу даних, інфраструктура для MLOps.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <button class="faq-question">
+                        49. Коли використовувати real-time OLAP бази (ClickHouse, Druid, Pinot)?
+                        <span class="toggle-icon">+</span>
+                    </button>
+                    <div class="faq-answer">
+                        <div class="answer-content">
+                            <p>Real-time OLAP бази оптимізовані для агрегатних запитів з затримкою в мілісекунди над свіжими даними, з високою конкурентністю запитів.</p>
+                            <ul>
+                            <li><strong>ClickHouse:</strong> колонкова СУБД, дуже швидкі агрегації, SQL, рушій MergeTree. Універсальний вибір для аналітики логів, подій, метрик.</li>
+                            <li><strong>Apache Druid:</strong> пре-агрегація під час інжесту (rollup), сильний у time-series та дашбордах.</li>
+                            <li><strong>Apache Pinot:</strong> створений у LinkedIn для user-facing аналітики (тисячі запитів за секунду від кінцевих користувачів), upsert-и в реальному часі.</li>
+                            </ul>
+                            <p><strong>Коли варто:</strong> продуктові дашборди для клієнтів, моніторинг в реальному часі, аналітика подій із секундною свіжістю. <strong>Коли ні:</strong> складні JOIN-и між великими таблицями та важкий ETL — тут краще Snowflake/BigQuery/Spark.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <button class="faq-question">
+                        50. Що таке semantic layer (metrics layer) і яку проблему він вирішує?
+                        <span class="toggle-icon">+</span>
+                    </button>
+                    <div class="faq-answer">
+                        <div class="answer-content">
+                            <p><strong>Semantic layer</strong> — шар між сховищем даних і споживачами (BI, ноутбуки, AI-асистенти), де централізовано визначаються бізнес-метрики та сутності.</p>
+                            <p><strong>Проблема:</strong> метрику «активні користувачі» чи «виручка» кожна команда рахує по-своєму в різних дашбордах, і цифри не збігаються.</p>
+                            <ul>
+                            <li>Метрика визначається один раз у коді (формула, фільтри, виміри, гранулярність часу).</li>
+                            <li>Усі інструменти отримують однакові цифри через API чи SQL-інтерфейс.</li>
+                            <li>Метрики версіонуються в Git і проходять code review.</li>
+                            </ul>
+                            <p>Інструменти: dbt Semantic Layer (MetricFlow), Cube, LookML у Looker, AtScale.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <button class="faq-question">
+                        51. Як організувати CI/CD для дата-пайплайнів?
+                        <span class="toggle-icon">+</span>
+                    </button>
+                    <div class="faq-answer">
+                        <div class="answer-content">
+                            <ul>
+                            <li><strong>CI на кожен Pull Request:</strong> лінтери (ruff, sqlfluff), unit-тести, перевірка компіляції DAG-ів Airflow, <code>dbt build</code> лише змінених моделей та їхніх нащадків (<code>state:modified+</code>) в ізольованій схемі.</li>
+                            <li><strong>Data diff:</strong> порівняння результатів зміненої моделі з production.</li>
+                            <li><strong>Environment promotion:</strong> dev → staging → prod з однаковим кодом і різною конфігурацією; артефакти (Docker-образи, wheel-пакети) збираються один раз і просуваються між середовищами.</li>
+                            <li><strong>Інфраструктура</strong> розгортається через IaC (Terraform plan у PR, apply після merge).</li>
+                            <li><strong>Безпечний реліз:</strong> міграції схем до розгортання коду, blue-green для таблиць (запис у нову версію та атомарне перемикання view), можливість швидкого відкату.</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <button class="faq-question">
+                        52. Як ви встановлюєте інженерні стандарти та проводите code review у дата-команді?
+                        <span class="toggle-icon">+</span>
+                    </button>
+                    <div class="faq-answer">
+                        <div class="answer-content">
+                            <ul>
+                            <li><strong>Стандарти в коді, а не в документах:</strong> лінтери та форматери (ruff, sqlfluff), pre-commit хуки, шаблони проєктів (cookiecutter) — те, що можна перевірити автоматично, не обговорюється на review.</li>
+                            <li><strong>Конвенції:</strong> іменування таблиць і шарів (<code>stg_</code>, <code>int_</code>, <code>fct_</code>, <code>dim_</code>), структура репозиторію, обов'язкові тести й документація для нових моделей.</li>
+                            <li><strong>Code review фокусується на суті:</strong> коректність логіки, ідемпотентність, вплив на продуктивність і вартість, обробка граничних випадків (NULL, дублікати, пізні дані), зворотна сумісність схем.</li>
+                            <li><strong>Невеликі PR</strong> та чіткий опис «що і навіщо».</li>
+                            <li><strong>ADR (Architecture Decision Records)</strong> для важливих рішень.</li>
+                            <li>Менторинг: review — це спосіб навчання, тому коментарі пояснюють «чому», а не лише «що змінити».</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <button class="faq-question">
+                        53. Як мігрувати з on-premise Hadoop у хмару?
+                        <span class="toggle-icon">+</span>
+                    </button>
+                    <div class="faq-answer">
+                        <div class="answer-content">
+                            <ul>
+                            <li><strong>Інвентаризація:</strong> перелік job-ів, таблиць, споживачів, залежностей, обсягів і SLA; визначення, що можна вимкнути взагалі.</li>
+                            <li><strong>Вибір стратегії:</strong> <em>lift-and-shift</em> (Amazon EMR / Dataproc з мінімальними змінами) — швидко, але без повної вигоди; <em>re-platform</em> (S3 + Iceberg/Delta, Spark, керований оркестратор) — оптимальний баланс; <em>re-architect</em> (Snowflake/BigQuery, dbt) — найбільша вигода, найбільше роботи.</li>
+                            <li><strong>Перенесення даних:</strong> DistCp, AWS DataSync, Snowball для петабайтних обсягів; HDFS → S3 вимагає уваги до семантики (немає атомарного rename).</li>
+                            <li><strong>Паралельна робота</strong> старої та нової систем, звірка результатів (row counts, контрольні суми, data diff).</li>
+                            <li><strong>Поетапне перемикання</strong> споживачів за доменами, а не все одразу.</li>
+                            <li><strong>Нові аспекти:</strong> IAM замість Kerberos/Ranger, моделі вартості, мережа між on-prem і хмарою.</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <button class="faq-question">
+                        54. Що таке backpressure у потокових системах і як з ним працювати?
+                        <span class="toggle-icon">+</span>
+                    </button>
+                    <div class="faq-answer">
+                        <div class="answer-content">
+                            <p><strong>Backpressure</strong> виникає, коли споживач обробляє дані повільніше, ніж їх генерує джерело. Без контролю це призводить до переповнення буферів, OutOfMemory або втрати даних.</p>
+                            <ul>
+                            <li><strong>Flink</strong> має вбудований механізм: повільний оператор перестає приймати буфери, і тиск поширюється вгору по графу аж до джерела, яке сповільнює читання з Kafka.</li>
+                            <li><strong>Spark Structured Streaming:</strong> обмеження обсягу мікро-пакету (<code>maxOffsetsPerTrigger</code>, <code>maxFilesPerTrigger</code>).</li>
+                            <li><strong>Kafka як буфер:</strong> дані накопичуються в топіку, а consumer lag показує, наскільки споживач відстає.</li>
+                            </ul>
+                            <p><strong>Як вирішувати:</strong> знайти вузьке місце (метрики backpressure у Flink UI, consumer lag), збільшити паралелізм (і кількість партицій), оптимізувати повільний оператор чи sink (пакетний запис, async I/O), усунути skew.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <button class="faq-question">
+                        55. Що таке Reverse ETL і коли він потрібен?
+                        <span class="toggle-icon">+</span>
+                    </button>
+                    <div class="faq-answer">
+                        <div class="answer-content">
+                            <p><strong>Reverse ETL</strong> — передача даних зі сховища (Snowflake, BigQuery) назад в операційні системи: CRM (Salesforce, HubSpot), маркетингові платформи, системи підтримки, рекламні кабінети.</p>
+                            <ul>
+                            <li><strong>Навіщо:</strong> сховище стає єдиним джерелом істини, а бізнес-команди бачать розраховані показники (LTV, ризик відтоку, сегменти) прямо у своїх робочих інструментах.</li>
+                            <li><strong>Інструменти:</strong> Hightouch, Census, власні job-и через API.</li>
+                            <li><strong>Виклики:</strong> обмеження частоти запитів (rate limits) API, інкрементальна синхронізація (відправляти лише зміни), ідемпотентність, обробка помилок, відповідність вимогам щодо персональних даних.</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <button class="faq-question">
+                        56. Як приймати рішення build vs buy (керований сервіс чи власне рішення)?
+                        <span class="toggle-icon">+</span>
+                    </button>
+                    <div class="faq-answer">
+                        <div class="answer-content">
+                            <p><strong>Критерії оцінки:</strong></p>
+                            <ul>
+                            <li><strong>Total Cost of Ownership:</strong> не лише ціна ліцензії чи хмари, а й час інженерів на розгортання, оновлення, моніторинг, чергування.</li>
+                            <li><strong>Диференціація:</strong> чи є ця система конкурентною перевагою компанії? Якщо ні (ingestion з SaaS, оркестрація) — краще купити і зосередити команду на бізнес-логіці.</li>
+                            <li><strong>Вимоги:</strong> масштаб, затримка, безпека, регуляторні обмеження (дані не можна виносити за межі країни).</li>
+                            <li><strong>Експертиза команди</strong> та ризик залежності від однієї людини.</li>
+                            <li><strong>Vendor lock-in:</strong> чи можна вийти, чи використовуються відкриті формати (Parquet, Iceberg).</li>
+                            <li><strong>Масштаб у майбутньому:</strong> керовані сервіси часто дешевші на старті й дорожчі на великих обсягах.</li>
+                            </ul>
+                            <p>Рішення варто фіксувати в ADR і переглядати при зміні масштабу.</p>
                         </div>
                     </div>
                 </div>
