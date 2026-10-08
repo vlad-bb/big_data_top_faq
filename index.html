@@ -294,6 +294,31 @@
 
                 <div class="faq-item">
                     <button class="faq-question">
+                        11. Що таке OLTP та OLAP? У чому різниця між ними?
+                        <span class="toggle-icon">+</span>
+                    </button>
+                    <div class="faq-answer">
+                        <div class="answer-content">
+                            <p><strong>OLTP (Online Transaction Processing)</strong> та <strong>OLAP (Online Analytical
+                                    Processing)</strong> — це два типи систем обробки даних з різним призначенням.</p>
+                            <ul>
+                                <li><strong>OLTP:</strong> обслуговує щоденні операції бізнесу — велика кількість коротких
+                                    транзакцій (INSERT, UPDATE, DELETE) над окремими рядками. Дані нормалізовані, важливі
+                                    ACID-гарантії та низька затримка. Приклади: PostgreSQL, MySQL, Oracle для інтернет-магазину
+                                    чи банківської системи.</li>
+                                <li><strong>OLAP:</strong> призначена для аналітики — складні запити з агрегаціями (SUM, AVG,
+                                    GROUP BY) над мільйонами рядків, переважно читання. Дані денормалізовані (star / snowflake
+                                    схеми), часто зберігаються у колонковому форматі. Приклади: Snowflake, Amazon Redshift,
+                                    Google BigQuery, ClickHouse.</li>
+                            </ul>
+                            <p>Типовий потік: дані з OLTP-систем через ETL/ELT завантажуються в OLAP-сховище (Data Warehouse),
+                                щоб аналітичні запити не навантажували робочу базу.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <button class="faq-question">
                         12. Чим відрізняються dimension tables від fact tables?
                         <span class="toggle-icon">+</span>
                     </button>
@@ -410,28 +435,6 @@
 
                 <div class="faq-item">
                     <button class="faq-question">
-                        26. Що таке Data Lake і для чого використовується?
-                        <span class="toggle-icon">+</span>
-                    </button>
-                    <div class="faq-answer">
-                        <div class="answer-content">
-                            <p><strong>Data Lake (Озеро даних)</strong> — це централізоване сховище, що дозволяє
-                                зберігати всі структуровані, напівструктуровані та неструктуровані дані у їхньому
-                                первозданному (сирому) вигляді при будь-якому масштабі.</p>
-                            <p><strong>Для чого використовується:</strong></p>
-                            <ul>
-                                <li>Зберігання величезних масивів сирих даних з різних джерел без необхідності їх
-                                    попереднього структурування (Schema-on-read).</li>
-                                <li>Машинне навчання, предиктивна аналітика та Data Science.</li>
-                                <li>Створення єдиного джерела істини для всієї компанії (потім дані зазвичай
-                                    перетворюються та відправляються у Data Warehouse).</li>
-                            </ul>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="faq-item">
-                    <button class="faq-question">
                         20. Що таке DAG (Directed Acyclic Graph) у контексті конвеєрів даних?
                         <span class="toggle-icon">+</span>
                     </button>
@@ -512,6 +515,28 @@
                             <ul>
                                 <li><strong>List comprehension (список):</strong> <code>[x**2 for x in range(5) if x % 2 == 0]</code> -> [0, 4, 16]</li>
                                 <li><strong>Dict comprehension (словник):</strong> <code>{x: x**2 for x in range(3)}</code> -> {0: 0, 1: 1, 2: 4}</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <button class="faq-question">
+                        26. Що таке Data Lake і для чого використовується?
+                        <span class="toggle-icon">+</span>
+                    </button>
+                    <div class="faq-answer">
+                        <div class="answer-content">
+                            <p><strong>Data Lake (Озеро даних)</strong> — це централізоване сховище, що дозволяє
+                                зберігати всі структуровані, напівструктуровані та неструктуровані дані у їхньому
+                                первозданному (сирому) вигляді при будь-якому масштабі.</p>
+                            <p><strong>Для чого використовується:</strong></p>
+                            <ul>
+                                <li>Зберігання величезних масивів сирих даних з різних джерел без необхідності їх
+                                    попереднього структурування (Schema-on-read).</li>
+                                <li>Машинне навчання, предиктивна аналітика та Data Science.</li>
+                                <li>Створення єдиного джерела істини для всієї компанії (потім дані зазвичай
+                                    перетворюються та відправляються у Data Warehouse).</li>
                             </ul>
                         </div>
                     </div>
