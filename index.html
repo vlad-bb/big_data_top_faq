@@ -3620,6 +3620,208 @@ print(add_numbers(10))</code></pre>
                         </div>
                     </div>
                 </div>
+
+                <div class="faq-item">
+                    <button class="faq-question">
+                        133. Чим відрізняються Delta Lake та Apache Iceberg і як обрати між ними?
+                        <span class="toggle-icon">+</span>
+                    </button>
+                    <div class="faq-answer">
+                        <div class="answer-content">
+                            <p>Обидва — відкриті табличні формати поверх Parquet-файлів в об'єктному сховищі. Обидва дають ACID-транзакції, time travel, schema evolution, <code>MERGE</code>/<code>UPDATE</code>/<code>DELETE</code>.</p>
+                            <ul>
+                            <li><strong>Походження:</strong> Delta Lake створено в Databricks; Iceberg — у Netflix, зараз проєкт Apache.</li>
+                            <li><strong>Метадані:</strong> Delta зберігає журнал комітів у <code>_delta_log/</code> (JSON + checkpoint-и). Iceberg має дерево метаданих: <code>metadata.json</code> → manifest list (snapshot) → manifest-файли → data-файли.</li>
+                            <li><strong>Партиціонування:</strong> Iceberg має hidden partitioning та partition evolution без перезапису даних. Delta використовує звичайні колонки партицій або liquid clustering.</li>
+                            <li><strong>Екосистема:</strong> Delta найкраще працює у Spark/Databricks. Iceberg нативно підтримують Spark, Flink, Trino, Athena, Snowflake, BigQuery; на ньому побудовані Amazon S3 Tables.</li>
+                            <li><strong>Сумісність:</strong> Delta UniForm дозволяє читати Delta-таблицю як Iceberg.</li>
+                            </ul>
+                            <p><strong>Як обрати:</strong> платформа на Databricks — Delta Lake. Багато різних рушіїв (Athena + Spark + Trino + Snowflake) або AWS-стек — Iceberg. Деталі внутрішньої будови — у Senior-питаннях 32 та 33.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <button class="faq-question">
+                        134. Як синхронізувати PostgreSQL з OLAP-базою (сховищем даних)?
+                        <span class="toggle-icon">+</span>
+                    </button>
+                    <div class="faq-answer">
+                        <div class="answer-content">
+                            <p><strong>1. CDC (Change Data Capture) — основний підхід:</strong></p>
+                            <ul>
+                            <li>У PostgreSQL вмикається логічна реплікація (<code>wal_level=logical</code>), створюються replication slot та publication.</li>
+                            <li><strong>Debezium</strong> читає WAL і публікує кожну зміну (insert/update/delete) у Kafka. Далі sink записує зміни в OLAP: ClickHouse (ReplacingMergeTree з колонкою версії), Snowflake, або Spark job виконує <code>MERGE</code> в Iceberg/Delta.</li>
+                            <li><strong>AWS DMS:</strong> full load + CDC у S3, Redshift чи Kinesis.</li>
+                            <li><strong>Zero-ETL інтеграція</strong> Aurora/RDS PostgreSQL → Amazon Redshift — без власних пайплайнів.</li>
+                            </ul>
+                            <p><strong>2. Batch-інкрементальне завантаження:</strong> вибірка рядків з <code>updated_at &gt; останній watermark</code> і <code>MERGE</code> у цільову таблицю. Простіше, але <em>не бачить фізичних видалень</em> (потрібні soft delete або періодичне повне порівняння) і навантажує робочу базу.</p>
+                            <p><strong>На що звернути увагу (часто питають):</strong></p>
+                            <ul>
+                            <li>Початковий snapshot таблиці + коректне перемикання на потік змін без пропусків.</li>
+                            <li>Обробка видалень і порядок змін (за LSN), ідемпотентний upsert за первинним ключем.</li>
+                            <li>Зміни схеми в джерелі.</li>
+                            <li>Якщо консюмер зупинився, replication slot утримує WAL, і диск PostgreSQL може переповнитися — потрібен моніторинг лагу слота.</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <button class="faq-question">
+                        135. Як валідувати схему даних у Data Lake?
+                        <span class="toggle-icon">+</span>
+                    </button>
+                    <div class="faq-answer">
+                        <div class="answer-content">
+                            <ul>
+                            <li><strong>Явна схема при читанні:</strong> задавати <code>StructType</code> замість <code>inferSchema</code>. Режими: <code>FAILFAST</code> (падати на першому некоректному записі), <code>PERMISSIVE</code> з <code>columnNameOfCorruptRecord</code> (зберегти зламані рядки в окрему колонку), <code>DROPMALFORMED</code>.</li>
+                            <li><strong>Schema enforcement табличних форматів:</strong> Delta Lake відхиляє запис, якщо схема DataFrame не збігається з таблицею. Зміни дозволяються явно (<code>mergeSchema</code> / <code>autoMerge</code>), тобто еволюція схеми контрольована.</li>
+                            <li><strong>Реєстр схем:</strong> AWS Glue Schema Registry або Confluent Schema Registry з правилами сумісності для потокових даних; Glue Crawler з політикою змін схеми — для виявлення змін у файлах.</li>
+                            <li><strong>Перевірки якості поверх схеми:</strong> Great Expectations, Deequ/PyDeequ, AWS Glue Data Quality (DQDL), dbt model contracts (<code>contract: {enforced: true}</code>) і тести.</li>
+                            <li><strong>Quarantine-патерн:</strong> рядки, що не пройшли перевірку, пишуться в окрему таблицю з причиною помилки, а не зупиняють увесь пайплайн; на кількість відхилених записів ставиться алерт.</li>
+                            <li><strong>Data contracts</strong> з продюсерами даних, щоб ламаючі зміни ловилися ще до потрапляння в Lake (Senior-питання 29).</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <button class="faq-question">
+                        136. Які сервіси AWS для роботи з даними ви знаєте?
+                        <span class="toggle-icon">+</span>
+                    </button>
+                    <div class="faq-answer">
+                        <div class="answer-content">
+                            <ul>
+                            <li><strong>Зберігання:</strong> Amazon S3 (основа Data Lake), S3 Tables (керовані Iceberg-таблиці), класи зберігання та lifecycle-політики.</li>
+                            <li><strong>Інжест:</strong> Kinesis Data Streams, Amazon Data Firehose (доставка потоку в S3/Redshift), Amazon MSK (керована Kafka), AWS DMS (міграція та CDC з баз даних), AppFlow (дані з SaaS).</li>
+                            <li><strong>Обробка:</strong> AWS Glue (serverless Spark ETL, Data Catalog, Crawlers, Data Quality), Amazon EMR (керовані Spark/Hive/Flink кластери, також EMR Serverless), AWS Lambda (легкі подієві задачі).</li>
+                            <li><strong>Аналітика та запити:</strong> Amazon Athena (SQL над S3), Amazon Redshift (сховище даних, Redshift Spectrum для S3), Amazon OpenSearch, Amazon QuickSight (BI).</li>
+                            <li><strong>Оркестрація:</strong> Amazon MWAA (керований Airflow), AWS Step Functions, EventBridge (події та розклади).</li>
+                            <li><strong>Бази даних:</strong> RDS/Aurora (OLTP), DynamoDB (NoSQL key-value).</li>
+                            <li><strong>Безпека та governance:</strong> IAM, Lake Formation (доступи до таблиць аж до рівня колонок і рядків), KMS, Secrets Manager, CloudTrail.</li>
+                            </ul>
+                            <p>На співбесіді варто не перелічувати все, а описати свій реальний пайплайн: наприклад, «DMS → S3 (bronze) → Glue Spark job → Iceberg (silver/gold) → Athena і QuickSight, оркестрація в MWAA». Детальніше про окремі сервіси — Middle-питання 34–39.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <button class="faq-question">
+                        137. Як Spark визначає кількість партицій і як нею керувати?
+                        <span class="toggle-icon">+</span>
+                    </button>
+                    <div class="faq-answer">
+                        <div class="answer-content">
+                            <ul>
+                            <li><strong>Читання файлів:</strong> Spark ділить файли на партиції розміром до <code>spark.sql.files.maxPartitionBytes</code> (128 МБ за замовчуванням); дрібні файли об'єднуються з урахуванням <code>openCostInBytes</code>. Один нероздільний (non-splittable) файл, наприклад <code>.gz</code>, — завжди одна партиція.</li>
+                            <li><strong>Читання через JDBC:</strong> за замовчуванням — <em>одна партиція</em>, тобто одне з'єднання та одна задача. Для паралелізму треба задати <code>partitionColumn</code>, <code>lowerBound</code>, <code>upperBound</code>, <code>numPartitions</code>.</li>
+                            <li><strong>Після shuffle</strong> (join, groupBy): <code>spark.sql.shuffle.partitions</code> (200 за замовчуванням). AQE об'єднує дрібні партиції до <code>advisoryPartitionSizeInBytes</code> (64 МБ).</li>
+                            <li><strong>RDD:</strong> <code>spark.default.parallelism</code>, зазвичай кількість усіх ядер кластера.</li>
+                            <li><strong>Запис:</strong> кожна партиція DataFrame пише окремий файл у кожну директорію <code>partitionBy</code>, для якої містить дані. У гіршому випадку (наприклад, після випадкового shuffle) 200 партицій × 100 дат дадуть 20 000 файлів. Рішення — <code>df.repartition("date").write.partitionBy("date")</code>, щоб усі рядки однієї дати потрапили в одну партицію.</li>
+                            </ul>
+                            <p><strong>Практичні правила:</strong> 100–200 МБ даних на партицію, у 2–4 рази більше задач, ніж ядер. Перевірка: <code>df.rdd.getNumPartitions()</code> та Spark UI. Керування: <code>repartition</code> / <code>coalesce</code> (Middle-питання 107), налаштування <code>shuffle.partitions</code>, AQE.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <button class="faq-question">
+                        138. Як обробляти дублікати в пайплайні даних і забезпечити ідемпотентність?
+                        <span class="toggle-icon">+</span>
+                    </button>
+                    <div class="faq-answer">
+                        <div class="answer-content">
+                            <p><strong>Звідки беруться дублікати:</strong> at-least-once доставка в Kafka/SQS, повтори (retries) задач, ручні перезапуски та backfill, повторне програвання CDC, дублікати в самому джерелі.</p>
+                            <p><strong>Як прибрати дублікати:</strong></p>
+                            <ul>
+                            <li>SQL: <code>ROW_NUMBER() OVER (PARTITION BY business_key ORDER BY updated_at DESC) = 1</code> — залишити останню версію запису.</li>
+                            <li>Spark: <code>dropDuplicates(["id"])</code>; у streaming — <code>dropDuplicatesWithinWatermark</code> (Spark 3.5+), щоб стан не ріс безкінечно.</li>
+                            </ul>
+                            <p><strong>Як зробити запис ідемпотентним</strong> (повторний запуск дає той самий результат):</p>
+                            <ul>
+                            <li><code>MERGE</code> (upsert) за бізнес-ключем замість <code>INSERT</code>.</li>
+                            <li>Перезапис цілої партиції за період: <code>INSERT OVERWRITE</code>, <code>replaceWhere</code> у Delta, <code>partitionOverwriteMode=dynamic</code> у Spark.</li>
+                            <li>Логічна дата запуску замість <code>now()</code>, детерміновані шляхи та ключі.</li>
+                            <li>Streaming у Delta через <code>foreachBatch</code> — опції <code>txnAppId</code> / <code>txnVersion</code>, щоб той самий мікро-пакет не записався двічі.</li>
+                            </ul>
+                            <p><strong>Пастка:</strong> у Data Lake, Snowflake, Redshift та BigQuery PRIMARY KEY / UNIQUE <em>не перевіряються</em> (лише інформаційні), тому дублікати треба контролювати самостійно — тестами на унікальність. Визначення ідемпотентності — у Junior-питанні 21 та Middle-питанні 49.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <button class="faq-question">
+                        139. Як вирішувати проблему малих файлів у Delta Lake та Iceberg?
+                        <span class="toggle-icon">+</span>
+                    </button>
+                    <div class="faq-answer">
+                        <div class="answer-content">
+                            <p>Загальні причини та наслідки малих файлів описані в Middle-питанні 131 «Що таке проблема малих файлів (small files problem)…». Табличні формати мають для цього вбудовані інструменти.</p>
+                            <p><strong>Delta Lake:</strong></p>
+                            <ul>
+                            <li><code>OPTIMIZE table</code> — компактизація (bin-packing) дрібних файлів у великі (~1 ГБ); <code>OPTIMIZE ... ZORDER BY (col)</code> — заодно впорядковує дані.</li>
+                            <li><strong>Optimized writes</strong> (<code>delta.autoOptimize.optimizeWrite</code>) — укрупнення файлів ще під час запису.</li>
+                            <li><strong>Auto compaction</strong> (<code>delta.autoOptimize.autoCompact</code>) — автоматична компактизація після запису. На Databricks є predictive optimization.</li>
+                            </ul>
+                            <p><strong>Apache Iceberg:</strong></p>
+                            <ul>
+                            <li>Процедура <code>rewrite_data_files</code> (компактизація), <code>rewrite_manifests</code> (компактизація метаданих).</li>
+                            <li>Автоматична компактизація в AWS Glue Data Catalog та Amazon S3 Tables.</li>
+                            </ul>
+                            <p><strong>Важливо:</strong> компактизація створює нові файли, але старі залишаються для time travel. Місце звільняється лише після <code>VACUUM</code> (Delta) чи <code>expire_snapshots</code> + <code>remove_orphan_files</code> (Iceberg). Для streaming-таблиць компактизацію запускають регулярно за розкладом.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <button class="faq-question">
+                        140. Як працюють time travel та версіонування в Delta Lake на практиці?
+                        <span class="toggle-icon">+</span>
+                    </button>
+                    <div class="faq-answer">
+                        <div class="answer-content">
+                            <p>Кожен коміт у Delta створює нову версію таблиці (як працює transaction log — Senior-питання 32).</p>
+                            <ul>
+                            <li><strong>Історія:</strong> <code>DESCRIBE HISTORY my_table</code> — версії, час, операція, користувач, метрики.</li>
+                            <li><strong>Читання старої версії:</strong> <code>SELECT * FROM my_table VERSION AS OF 12</code> або <code>TIMESTAMP AS OF '2024-05-01'</code>; у PySpark — <code>spark.read.option("versionAsOf", 12)</code>.</li>
+                            <li><strong>Відкат:</strong> <code>RESTORE TABLE my_table TO VERSION AS OF 12</code> — створює новий коміт зі станом старої версії (історія не губиться).</li>
+                            <li><strong>Порівняння версій</strong> для аудиту чи пошуку помилки: <code>EXCEPT</code> між двома версіями або Change Data Feed (<code>delta.enableChangeDataFeed</code>).</li>
+                            </ul>
+                            <p><strong>Скільки зберігається історія:</strong></p>
+                            <ul>
+                            <li><code>delta.logRetentionDuration</code> — скільки зберігати записи журналу (30 днів за замовчуванням).</li>
+                            <li><code>delta.deletedFileRetentionDuration</code> — скільки <code>VACUUM</code> не чіпає видалені файли (7 днів). Після <code>VACUUM</code> повернутися до старіших версій неможливо.</li>
+                            </ul>
+                            <p><strong>Time travel — не бекап:</strong> версії лежать у тому ж сховищі. Для довготривалих знімків використовують <code>DEEP CLONE</code> або реплікацію. В Iceberg аналоги — snapshots, <code>expire_snapshots</code>, а також теги та гілки (branches) для іменованих версій.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <button class="faq-question">
+                        141. Чи можна архівувати (додатково стиснути) Parquet-файли?
+                        <span class="toggle-icon">+</span>
+                    </button>
+                    <div class="faq-answer">
+                        <div class="answer-content">
+                            <p><strong>Parquet уже стиснутий</strong> всередині: кожен column chunk стискається кодеком (Snappy, ZSTD, Gzip) після dictionary- та RLE-кодування. Тому додаткове стиснення всього файлу (<code>zip</code>, <code>gzip</code>) дає мізерний виграш, але шкодить:</p>
+                            <ul>
+                            <li>файл стає нероздільним (non-splittable) — його читає одна задача;</li>
+                            <li>рушії не можуть прочитати footer з метаданими, тому зникають column pruning та predicate pushdown;</li>
+                            <li>Spark, Athena та Trino не прочитають <code>.parquet.gz</code> як таблицю без розпакування.</li>
+                            </ul>
+                            <p><strong>Як правильно зменшити місце та вартість:</strong></p>
+                            <ul>
+                            <li>Перезаписати файли з сильнішим кодеком, наприклад ZSTD з вищим рівнем (<code>spark.sql.parquet.compression.codec=zstd</code>), та укрупнити їх.</li>
+                            <li>Архівувати на рівні сховища: S3 lifecycle-політики (Standard → Standard-IA → Glacier) або S3 Intelligent-Tiering.</li>
+                            <li>Glacier Flexible Retrieval та Deep Archive не читаються напряму: Athena пропускає такі об'єкти, потрібне попереднє відновлення (restore). Glacier Instant Retrieval читається як звичайний об'єкт, але читання дорожче.</li>
+                            <li>Для Delta/Iceberg не можна просто перемістити файли — таблиця зламається. Спочатку виключити старі дані з таблиці (<code>DELETE</code> + <code>VACUUM</code> / <code>expire_snapshots</code>), попередньо скопіювавши їх в окрему архівну таблицю чи префікс.</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
             </div>
 
             <!-- Senior Питання -->
